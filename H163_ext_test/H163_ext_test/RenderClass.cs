@@ -488,7 +488,7 @@ namespace H163_ext_test
                                                     var dim = memory.read<Vector2>(vis + offsets.Dimensions);
                                                     var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                                                     Vector2 q = Scr_Mos.world_to_screen(pos2, dim, dim1);
-                                                    if (q.X != -1)
+                                                    if (q.X >= 0 && q.Y >= 0 && q.X <= 1920 && q.Y <= 1080)
                                                     {
                                                         int x = aqw.X - (int)q.X;
                                                         int y = aqw.Y - (int)q.Y;
@@ -504,7 +504,7 @@ namespace H163_ext_test
                                             }
                                         }
                                     }
-                                    if (a.X != -1)
+                                    if (q.X >= 0 && q.Y >= 0 && q.X <= 1920 && q.Y <= 1080)
                                     {
                                         int w = aqw.X - (int)a.X;
                                         int w2 = aqw.Y - (int)a.Y;
@@ -637,5 +637,6 @@ namespace H163_ext_test
         }
     }
 }
+
 
 
