@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\fasta\\OneDrive\\Рабочий стол\\H163_ext_test\\H163_ext_test\\H163_ext_test.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\fasta\\OneDrive\\Рабочий стол\\H163_ext_test\\H163_ext_test\\H163_ext_test.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\fasta\\OneDrive\\Рабочий стол\\H163_ext_test\\H163_ext_test\\H163_ext_test.csproj",
+        "projectName": "H163_ext_test",
+        "projectPath": "C:\\Users\\fasta\\OneDrive\\Рабочий стол\\H163_ext_test\\H163_ext_test\\H163_ext_test.csproj",
+        "packagesPath": "C:\\Users\\fasta\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\fasta\\OneDrive\\Рабочий стол\\H163_ext_test\\H163_ext_test\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\fasta\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "ClickableTransparentOverlay": {
+              "target": "Package",
+              "version": "[6.0.8, )"
+            },
+            "ImGui.NET": {
+              "target": "Package",
+              "version": "[1.89.7.1, )"
+            },
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[3.1.12, )"
+            },
+            "Veldrid.ImGui": {
+              "target": "Package",
+              "version": "[5.72.0, )"
+            },
+            "Vortice.D3DCompiler": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "Vortice.Direct3D11": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "Vortice.Mathematics": {
+              "target": "Package",
+              "version": "[1.6.2, )"
+            },
+            "swed64": {
+              "target": "Package",
+              "version": "[1.0.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
