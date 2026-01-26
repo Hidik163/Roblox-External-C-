@@ -592,7 +592,7 @@ namespace H163_ext_test
                             {
                                 var prim = local.ReadPointer(child.address + offsets.Primitive);
                                 Vector2 sa3 = Scr_Mos.world_to_screen(local.ReadVec(prim + offsets.Position), dim, dim1);
-                                if (nickname)
+                                if (nickname && i.name().Length > 1)
                                     draw.AddText(new Vector2(sa3.X - 20f, sa3.Y - 25f), nik_cvet, i.name());
                                 if (lines)
                                     draw.AddLine(new Vector2(960, 540), sa3, cvet);
@@ -635,3 +635,4 @@ namespace H163_ext_test
         }
     }
 }
+
