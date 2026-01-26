@@ -16,22 +16,6 @@ namespace H163_ext_test
 {
     public class RenderClass : Overlay
     {
-        string[] r6chs =
-        {
-            "Head",
-            "Left Leg",
-            "Right Leg",
-            "Left Arm",
-            "Right Arm"
-        };
-        string[] r15chs =
-        {
-            "Head",
-            "LeftFoot",
-            "RightFoot",
-            "LeftHand",
-            "RightHand"
-        };
         string[] cl_gr = { "White", "Black", "Light-Green", "Blue", "Green", "Pink", "Black-blue", "Purple", "Black-pink", "Turquoise", "Grey", "Light-Green-2", "Black-Green", "Orange" };
         int zis_color = 0;
         bool attach = false;
@@ -733,4 +717,5 @@ namespace H163_ext_test
 //        }
 //    }
 //}
+
 //ImGui.End();
