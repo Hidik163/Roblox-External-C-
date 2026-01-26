@@ -184,7 +184,7 @@ namespace H163_ext_test
         public static readonly int WorkspaceToWorld = 0x3D8;
         public static readonly int viewmatrix = 0x4B0;
     }
-    public class memory
+    public class memory  //copy paste
     {
         public static IntPtr handle = IntPtr.Zero;
         public static int pid = 0;
@@ -213,7 +213,7 @@ namespace H163_ext_test
             handle = OpenProcess(0x1F0FFF, false, pid);
             return handle != IntPtr.Zero;
         }
-        public static T read<T>(IntPtr addy) where T : struct
+        public static T read<T>(IntPtr addy) where T : struct 
         {
             int size = Marshal.SizeOf(typeof(T));
             byte[] buff = new byte[size];
@@ -223,7 +223,7 @@ namespace H163_ext_test
             return value;
         }
 
-        public static bool write<T>(IntPtr addy, T value) where T : struct // ok
+        public static bool write<T>(IntPtr addy, T value) where T : struct 
         {
             int size = Marshal.SizeOf(typeof(T));
             byte[] buff = new byte[size];
@@ -249,7 +249,7 @@ namespace H163_ext_test
         }
     }
 
-    public class instance
+    public class instance 
     {
         public static Swed local = new Swed("RobloxPlayerBeta");
         public IntPtr address;
@@ -259,7 +259,7 @@ namespace H163_ext_test
             address = addy;
         }
 
-        public string name()
+        public string name()  //copy paste
         {
             var ptr = local.ReadPointer(address + offsets.Name);
             return ptr != IntPtr.Zero ? memory.readstring(ptr, Convert.ToString(ptr).Length) : string.Empty;
@@ -275,7 +275,7 @@ namespace H163_ext_test
             return local.ReadString(obj2, Convert.ToString(obj2).Length);
         }
 
-        public List<instance> getchildren()
+        public List<instance> getchildren()  //copy paste
         {
             var children = new List<instance>();
             var start = local.ReadPointer(address + offsets.Children);
@@ -290,7 +290,7 @@ namespace H163_ext_test
             return children;
         }
 
-        public instance findfirstchild(string name)
+        public instance findfirstchild(string name)  //copy paste
         {
             foreach (var child in getchildren())
             {
@@ -303,3 +303,4 @@ namespace H163_ext_test
         
     }
 }
+
