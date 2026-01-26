@@ -471,6 +471,8 @@ namespace H163_ext_test
                                     float closestDistance = float.MaxValue;
                                     var name = Player_Modules.LocalPlayer().name();
                                     var aqw = Scr_Mos.GetMousePosition();
+                                    var dim = memory.read<Vector2>(vis + offsets.Dimensions);
+                                    var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                                     foreach (var child in Player_Modules._players().getchildren())
                                     {
                                         if (child.name() != name)
@@ -484,9 +486,7 @@ namespace H163_ext_test
                                                 Vector3 pos2 = local.ReadVec(head_prim + offsets.Position);                                               
                                                 Vector3 raznica = new Vector3(Math.Abs(pss.X - pos2.X), Math.Abs(pss.Y - pos2.Y), Math.Abs(pss.Z - pss.Z));
                                                 if (raznica.X < distance_work && raznica.Y < distance_work && raznica.Z < distance_work)
-                                                {
-                                                    var dim = memory.read<Vector2>(vis + offsets.Dimensions);
-                                                    var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
+                                                {    
                                                     Vector2 q = Scr_Mos.world_to_screen(pos2, dim, dim1);
                                                     if (q.X >= 0 && q.Y >= 0 && q.X <= 1920 && q.Y <= 1080)
                                                     {
@@ -511,6 +511,7 @@ namespace H163_ext_test
                                         Scr_Mos.MoveMouse(-w / 2, -w2 / 2);
                                     }
                                 }
+                                Thread.Sleep(1);
                     
                             }
                             aim_m = false;
@@ -637,6 +638,7 @@ namespace H163_ext_test
         }
     }
 }
+
 
 
 
