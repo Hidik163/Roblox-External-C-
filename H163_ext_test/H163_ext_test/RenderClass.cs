@@ -460,43 +460,45 @@ namespace H163_ext_test
                         aim_m = true;
                         Thread sss = new Thread(() =>
                         {
+                            var vis = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
                             while (aim)
                             {
                                 if ((memory.GetAsyncKeyState(0x02) & 0x8000) != 0)
-                                {
-                                    var vis = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
-                                    var dim = memory.read<Vector2>(vis + offsets.Dimensions);
-                                    var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
+                                {  
+                                    var my = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
+                                    Vector3 pss = local.ReadVec(my + offsets.Position);
                                     Vector2 a = new Vector2(-1, -1);
                                     float closestDistance = float.MaxValue;
+                                    var name = Player_Modules.LocalPlayer().name();
+                                    var aqw = Scr_Mos.GetMousePosition();
                                     foreach (var child in Player_Modules._players().getchildren())
                                     {
-                                        if (child.name() != Player_Modules.LocalPlayer().name())
+                                        if (child.name() != name)
                                         {
                                             var ca = local.ReadPointer(child.address + Offsets2.Player.Character);
+                                            if (ca == 0) continue;
                                             instance a2 = new instance(ca);
                                             if (local.ReadFloat(a2.findfirstchild("Humanoid").address + offsets.Health) > 0)
                                             {
                                                 var head_prim = local.ReadPointer(a2.findfirstchild("Head").address + offsets.Primitive);
-                                                Vector3 pos2 = local.ReadVec(head_prim + offsets.Position);
-                                                var my = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
-                                                Vector3 pss = local.ReadVec(my + offsets.Position);
+                                                Vector3 pos2 = local.ReadVec(head_prim + offsets.Position);                                               
                                                 Vector3 raznica = new Vector3(Math.Abs(pss.X - pos2.X), Math.Abs(pss.Y - pos2.Y), Math.Abs(pss.Z - pss.Z));
                                                 if (raznica.X < distance_work && raznica.Y < distance_work && raznica.Z < distance_work)
                                                 {
+                                                    var dim = memory.read<Vector2>(vis + offsets.Dimensions);
+                                                    var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                                                     Vector2 q = Scr_Mos.world_to_screen(pos2, dim, dim1);
                                                     if (q.X != -1)
                                                     {
-
-                                                        int x = Scr_Mos.GetMousePosition().X - (int)q.X;
-                                                        int y = Scr_Mos.GetMousePosition().Y - (int)q.Y;
+                                                        int x = aqw.X - (int)q.X;
+                                                        int y = aqw.Y - (int)q.Y;
                                                         float dist = (float)Math.Sqrt(x * x + y * y);
                                                         if (dist < closestDistance)
                                                         {
                                                             closestDistance = dist;
                                                             a = q;
                                                         }
-
+                    
                                                     }
                                                 }
                                             }
@@ -504,12 +506,12 @@ namespace H163_ext_test
                                     }
                                     if (a.X != -1)
                                     {
-                                        int w = Scr_Mos.GetMousePosition().X - (int)a.X;
-                                        int w2 = Scr_Mos.GetMousePosition().Y - (int)a.Y;
+                                        int w = aqw.X - (int)a.X;
+                                        int w2 = aqw.Y - (int)a.Y;
                                         Scr_Mos.MoveMouse(-w / 2, -w2 / 2);
                                     }
                                 }
-
+                    
                             }
                             aim_m = false;
                         });
@@ -635,4 +637,5 @@ namespace H163_ext_test
         }
     }
 }
+
 
