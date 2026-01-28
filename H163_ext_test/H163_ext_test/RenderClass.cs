@@ -68,14 +68,18 @@ namespace H163_ext_test
         Vector3 c3 = new Vector3(1, 1, 1);
         Vector3 c4 = new Vector3(1, 1, 1);
         Vector3 ale = new Vector3(1, 1, 1);
-        Vector3 get_ale = new Vector3(1, 1, 1);
+        Vector3 get_ale = new Vector3(1, 1, 1);        
         int menu = 1;
         float speed = 22;
         float power = 16;
+        float heqw = 0;
         static Swed local = new Swed("RobloxPlayerBeta");
         Vector4 suport_cvet = new Vector4(1, 1, 0, 1);
         Vector4 suport_nik_cvet = new Vector4(0, 1, 0, 1);
-       
+        Vector4 gui_lab_bbt = new Vector4(0.5f,0.5f,0,1);
+        Vector4 gui_lab_txt = new Vector4(0.9f, 0.9f, 0, 1);
+
+
 
 
         protected override void Render()
@@ -93,10 +97,10 @@ namespace H163_ext_test
                 style.WindowBorderSize = 2;
                 style.WindowRounding = 6;
                 style.FrameRounding = 3;
-                style.Colors[(int)ImGuiCol.Button] = new Vector4(0.5f, 0.5f, 0, 1);
-                style.Colors[(int)ImGuiCol.Text] = new Vector4(0.9f, 0.9f, 0, 1);
-                style.Colors[(int)ImGuiCol.Border] = new Vector4(0.5f, 0.5f, 0, 1);
-                style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.5f, 0.5f, 0, 1);
+                style.Colors[(int)ImGuiCol.Button] = gui_lab_bbt;
+                style.Colors[(int)ImGuiCol.Text] = gui_lab_txt;
+                style.Colors[(int)ImGuiCol.Border] = gui_lab_bbt;
+                style.Colors[(int)ImGuiCol.TitleBgActive] = gui_lab_bbt;
                 ImGui.Begin($"Hidik163_exe", ImGuiWindowFlags.NoResize);
                 ImGui.SetCursorPos(new Vector2(500, 30));
                 ImGui.Text($"Attach ({attach})");
@@ -136,6 +140,11 @@ namespace H163_ext_test
                 {
                     menu = 5;
                 }
+                ImGui.SetCursorPos(new Vector2(527, 747));
+                if (ImGui.Button("  Gui\nSettings"))
+                {
+                    menu = 6;
+                }
                 if (menu == 1)
                 {
                     ImGui.SetCursorPos(new Vector2(20, 80));
@@ -164,6 +173,10 @@ namespace H163_ext_test
                     ImGui.SameLine();
                     if (ImGui.Button("Set"))
                         Humanoid.JumpPower(power);
+                    ImGui.SliderFloat("HipHeight", ref heqw, 0, 400);
+                    ImGui.SameLine();
+                    if (ImGui.Button("Set_2"))
+                        local.WriteFloat(Humanoid.Humanoid_LocalPlayer().address + offsets.HipHeight,heqw);
                     ImGui.Checkbox("NoClip", ref noclip);
                     if (noclip && !noclip_mask)
                     {
@@ -461,15 +474,16 @@ namespace H163_ext_test
                         Thread sss = new Thread(() =>
                         {
                             var vis = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
+                            var name = Player_Modules.LocalPlayer().name();
                             while (aim)
                             {
                                 if ((memory.GetAsyncKeyState(0x02) & 0x8000) != 0)
-                                {  
+                                    {                                    
                                     var my = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
+                                    if (my == 0) continue;
                                     Vector3 pss = local.ReadVec(my + offsets.Position);
                                     Vector2 a = new Vector2(-1, -1);
                                     float closestDistance = float.MaxValue;
-                                    var name = Player_Modules.LocalPlayer().name();
                                     var aqw = Scr_Mos.GetMousePosition();
                                     var dim = memory.read<Vector2>(vis + offsets.Dimensions);
                                     var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
@@ -480,31 +494,33 @@ namespace H163_ext_test
                                             var ca = local.ReadPointer(child.address + Offsets2.Player.Character);
                                             if (ca == 0) continue;
                                             instance a2 = new instance(ca);
-                                            if (local.ReadFloat(a2.findfirstchild("Humanoid").address + offsets.Health) > 0)
+                                            var hud = a2.findfirstchild("Humanoid").address;
+                                            if(hud == 0) continue;
+                                            if (local.ReadFloat(hud + offsets.Health) > 0)
                                             {
-                                                var head_prim = local.ReadPointer(a2.findfirstchild("Head").address + offsets.Primitive);
+                                                var head = a2.findfirstchild("Head").address;
+                                                var head_prim = local.ReadPointer(head + offsets.Primitive);
+                                                if (head_prim == 0) continue;
                                                 Vector3 pos2 = local.ReadVec(head_prim + offsets.Position);                                               
-                                                Vector3 raznica = new Vector3(Math.Abs(pss.X - pos2.X), Math.Abs(pss.Y - pos2.Y), Math.Abs(pss.Z - pss.Z));
-                                                if (raznica.X < distance_work && raznica.Y < distance_work && raznica.Z < distance_work)
-                                                {    
+                                                if (Math.Abs(pss.X - pos2.X) < distance_work && Math.Abs(pss.Y - pos2.Y) < distance_work && Math.Abs(pss.Z - pos2.Z) < distance_work)
+                                                {                                                    
                                                     Vector2 q = Scr_Mos.world_to_screen(pos2, dim, dim1);
                                                     if (q.X >= 0 && q.Y >= 0 && q.X <= 1920 && q.Y <= 1080)
                                                     {
                                                         int x = aqw.X - (int)q.X;
                                                         int y = aqw.Y - (int)q.Y;
-                                                        float dist = (float)Math.Sqrt(x * x + y * y);
+                                                        float dist = x * x + y * y;
                                                         if (dist < closestDistance)
                                                         {
                                                             closestDistance = dist;
                                                             a = q;
                                                         }
-                    
                                                     }
                                                 }
                                             }
                                         }
                                     }
-                                    if (q.X >= 0 && q.Y >= 0 && q.X <= 1920 && q.Y <= 1080)
+                                    if (a.X >= 0 && a.Y >= 0 && a.X <= 1920 && a.Y <= 1080)
                                     {
                                         int w = aqw.X - (int)a.X;
                                         int w2 = aqw.Y - (int)a.Y;
@@ -512,8 +528,7 @@ namespace H163_ext_test
                                     }
                                 }
                                 Thread.Sleep(1);
-                    
-                            }
+                            }                            
                             aim_m = false;
                         });
                         sss.Start();
@@ -545,10 +560,25 @@ namespace H163_ext_test
                     ImGui.Checkbox("Square", ref sq);
                     ImGui.Checkbox("Circle", ref ecl);
                     ImGui.Checkbox("skeleton", ref sk);
-                    ImGui.Checkbox("skeleton_2(coming)", ref sk2);                    
+                    ImGui.Checkbox("skeleton_2(coming)", ref sk2);
+                    ImGui.SetCursorPos(new Vector2(190, 250));
+                    ImGui.Text("ESP(settings)");
+                    ImGui.ColorEdit4("Nickname color",ref suport_nik_cvet);
+                    ImGui.ColorEdit4("Main color", ref suport_cvet);
                     ImGui.EndChild();
                 }
-                ImGui.End();
+                else if (menu == 6)
+                {
+                    ImGui.SetCursorPos(new Vector2(20, 80));
+                    ImGui.BeginChild("Gui Settings", new Vector2(500, 700), true);
+                    ImGui.SetCursorPos(new Vector2(210, 10));
+                    ImGui.Text("Gui(settings)");
+                    ImGui.Separator();
+                    ImGui.ColorEdit4("Text",ref gui_lab_txt);
+                    ImGui.ColorEdit4("Main", ref gui_lab_bbt);
+                    ImGui.EndChild();
+                }
+                    ImGui.End();
             }
             if (espaw)
             {
@@ -563,10 +593,10 @@ namespace H163_ext_test
                 var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                 foreach (var i in Player_Modules._players().getchildren())
                 {
-                    if (i.name() != Player_Modules.LocalPlayer().name() && i.name() != null)
+                    if (i.name() != Player_Modules.LocalPlayer().name())
                     {                        
                         var ch3 = local.ReadPointer(i.address + Offsets2.Player.Character);
-                        if (ch3 == 0) continue;                        
+                        if (ch3 == 0) continue;                             
                         Vector2 pqwsar15 = new Vector2(-1, -1);
                         Vector2 pqwsar6 = new Vector2(-1, -1);
                         bool r15q = false;
@@ -605,11 +635,10 @@ namespace H163_ext_test
                                     draw.AddRect(new Vector2(sa3.X - 20, sa3.Y + 40), new Vector2(sa3.X + 20, sa3.Y - 10), cvet);
                                 if (ecl)
                                     draw.AddCircle(sa3, 30, cvet);
-                                if(sk && !r15q)
+                                if (sk && !r15q)
                                     draw.AddLine(pqwsar6, sa3, cvet);
-                                else if(sk)
-                                    draw.AddLine(pqwsar15, sa3, cvet);
-                                
+                                else if (sk)
+                                    draw.AddLine(pqwsar15, sa3, cvet);                                                              
                             }
                             if (sk && !r15q)
                             {
@@ -638,6 +667,7 @@ namespace H163_ext_test
         }
     }
 }
+
 
 
 
