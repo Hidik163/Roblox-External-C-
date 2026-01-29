@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -114,28 +115,28 @@ namespace H163_ext_test
                     else
                         Console.WriteLine("ti eblan");
                 }
-                ImGui.SetCursorPos(new Vector2(50, 30));
+                ImGui.SetCursorPos(new Vector2(20, 40));
                 if (ImGui.Button("Player"))
                 {
                     menu = 1;
 
                 }
-                ImGui.SetCursorPos(new Vector2(130, 30));
+                ImGui.SetCursorPos(new Vector2(90, 40));
                 if (ImGui.Button("World"))
                 {
                     menu = 2;
                 }
-                ImGui.SetCursorPos(new Vector2(210, 30));
+                ImGui.SetCursorPos(new Vector2(160, 40));
                 if (ImGui.Button("AimBot"))
                 {
                     menu = 3;
                 }
-                ImGui.SetCursorPos(new Vector2(290, 30));
+                ImGui.SetCursorPos(new Vector2(230, 40));
                 if (ImGui.Button("Auto_farm"))
                 {
                     menu = 4;
                 }
-                ImGui.SetCursorPos(new Vector2(400, 30));
+                ImGui.SetCursorPos(new Vector2(320, 40));
                 if (ImGui.Button("Esp"))
                 {
                     menu = 5;
@@ -144,6 +145,11 @@ namespace H163_ext_test
                 if (ImGui.Button("  Gui\nSettings"))
                 {
                     menu = 6;
+                }
+                ImGui.SetCursorPos(new Vector2(370, 40));
+                if (ImGui.Button("Player List"))
+                {
+                    menu = 7;
                 }
                 if (menu == 1)
                 {
@@ -578,6 +584,55 @@ namespace H163_ext_test
                     ImGui.ColorEdit4("Main", ref gui_lab_bbt);
                     ImGui.EndChild();
                 }
+                else if (menu == 7)
+                {
+                    ImGui.SetCursorPos(new Vector2(20, 80));
+                    ImGui.BeginChild("Gui Settings", new Vector2(500, 700), true);
+                    ImGui.SetCursorPos(new Vector2(210, 10));
+                    ImGui.Text("Players");
+                    ImGui.Separator();
+                    var sub = local.ReadPointer(base_s._workspace().address + offsets.Camera);
+                    if (ImGui.Button($"                           Stop Spectate                           "))
+                    {
+                        var w = Player_Modules.Character_LocalPLayer().address;
+                        memory.write<nint>(sub + offsets.CameraSubject, w);
+                    }
+                    int pl = 1;                    
+                    foreach (var child in Player_Modules._players().getchildren())
+                    {
+                        if(child.name() != Player_Modules.LocalPlayer().name())
+                        {
+                            ImGui.NewLine();
+                            ImGui.Text($"{pl}. {child.name()}");
+                            ImGui.SameLine();
+                            if(ImGui.Button($"Spectate_{pl}"))
+                            {                               
+                                var w = local.ReadPointer(child.address + Offsets2.Player.Character);
+                                memory.write<nint>(sub + offsets.CameraSubject, w);
+                            }
+                            ImGui.SameLine();
+                            if (ImGui.Button($"Teleport_{pl}"))
+                            {
+                                var w = local.ReadPointer(child.address + Offsets2.Player.Character);
+                                instance a = new instance(w);
+                                var awe = local.ReadPointer(a.findfirstchild("Head").address + offsets.Primitive);
+                                Vector3 awqq = local.ReadVec(awe + offsets.Position);
+                                CFrame_a.Pre_Tp(awqq.X, awqq.Y, awqq.Z);
+                            }
+                            ImGui.SameLine();
+                            if (ImGui.Button($"Profile_{pl}"))
+                            {
+                                Process.Start(new ProcessStartInfo
+                                {
+                                    FileName = $"https://www.roblox.com/users/{local.ReadULong(child.address + offsets.UserId)}/profile",
+                                    UseShellExecute = true
+                                });
+                            }
+                            pl++;
+                        }
+                    }
+                    ImGui.EndChild();
+                }
                     ImGui.End();
             }
             if (espaw)
@@ -667,6 +722,7 @@ namespace H163_ext_test
         }
     }
 }
+
 
 
 
