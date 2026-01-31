@@ -13,11 +13,12 @@ using SharpDX.Direct3D11;
 using Shoto_tyt_esti;
 using Swed64;
 using Vortice.Mathematics;
+using static Shoto_tyt_esti.CFrame_a;
 namespace H163_ext_test
 {
     public class RenderClass : Overlay
     {
-        string[] cl_gr = { "White", "Black", "Light-Green", "Blue", "Green", "Pink", "Black-blue", "Purple", "Black-pink", "Turquoise", "Grey", "Light-Green-2", "Black-Green", "Orange" };
+        string[] cl_gr = { "White", "Black", "Light-Green", "Blue", "Default-Green", "Pink", "Black-blue", "Purple", "Black-pink", "Turquoise", "Grey", "Light-Green-2", "Black-Green", "Orange","Red", "Brown", "Light-purple", "Light-Blue" };
         int zis_color = 0;
         bool attach = false;
         bool lock_walk = false;
@@ -45,6 +46,10 @@ namespace H163_ext_test
         bool ecl = false;
         bool sk = false;
         bool sk2 = false;
+        bool ew = false;
+        bool ew_m = false;
+        bool dc = false;
+        bool dc_m = false;
         float distance_work = 75;
         float size_hit = 1;
         float gra = 0;
@@ -62,6 +67,14 @@ namespace H163_ext_test
         float atm = 0;
         float atm2 = 0;
         float sun23 = 0;
+        float fog1 = 0;
+        float fog2 = 1000;
+        float fvo = 1.7f;
+        float z = 0;
+        float z1 = 0;
+        float z2 = 0;
+        float iqwe = 5;
+        Vector3 colfog = new Vector3(0,0,0);
         Vector3 atm3 = new Vector3(1, 1, 1);
         Vector3 sasd = new Vector3(1, 1, 1);
         Vector3 colorqwe = new Vector3(1, 1, 1);
@@ -302,6 +315,8 @@ namespace H163_ext_test
                         });
                         fly2.Start();
                     }
+                    if (ImGui.Button("\n  Respawn  \n\n"))
+                        Humanoid.Reset();
                     ImGui.NewLine();
                     ImGui.InputFloat3("Position TP", ref ale);
                     ImGui.SameLine();
@@ -339,10 +354,113 @@ namespace H163_ext_test
                                 }
                                 Thread.Sleep(1000);
                             }
-                            hit_m = false;
+                            hit_m = false;                           
                         });
                         hit12.Start();
                     }
+                    ImGui.NewLine();
+                    ImGui.Text("Camera");
+                    ImGui.SliderFloat("Camera FOV", ref fvo, 0.1f, 3);
+                    ImGui.SameLine();
+                    if(ImGui.Button("set"))
+                    {
+                        local.WriteFloat(base_s.Camera() + offsets.FOV, fvo);
+                    }
+                    ImGui.NewLine();
+                    ImGui.Checkbox("OffsetCamera", ref ew);
+                    if (ew && !ew_m)
+                    {
+                        ew_m = true;
+                        Thread hit12 = new Thread(() =>
+                        {
+                            while (ew)
+                            {
+                                local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(z1, z, z2));
+                            }
+                            local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(0, 0, 0));
+                            ew_m = false;
+                        });
+                        hit12.Start();
+                    }                    
+                    ImGui.SliderFloat("X", ref z1, 0, 50);                   
+                    ImGui.SliderFloat("Y", ref z, 0, 50);
+                    ImGui.SliderFloat("Z", ref z2, 0, 50);
+                    ImGui.Checkbox("FreeCam (method = CameraOffsets)", ref dc);
+                    ImGui.SameLine();
+                    if(ImGui.Button("fix"))
+                    {
+                        foreach (var child in Player_Modules.Character_LocalPLayer().getchildren())
+                        {
+                            var p = local.ReadPointer(child.address + offsets.Primitive);
+                            if (local.ReadVec(p + offsets.PartSize) == new Vector3(2, 2, 1) && child.name() != "Torso")
+                            {
+                                var hrp_prim = local.ReadPointer(child.address + offsets.Primitive);
+                                CFrame m = memory.read<CFrame>(hrp_prim + offsets.CFrame);
+                                CFrame tp = new CFrame(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1), m.position);
+                                for (int i = 0; i < 1000; i++)
+                                {
+                                    memory.write<CFrame>(hrp_prim + offsets.CFrame, tp);
+                                }
+                            }
+                        }
+                        Humanoid.PlatformStand(true);
+                    }
+                    ImGui.SliderFloat("Speed", ref iqwe, 0, 10);
+                    ImGui.Text("WARNING:works only with 3rd person");
+                    if (dc && !dc_m)
+                    {
+                        dc_m = true;
+                        Thread hit12 = new Thread(() =>
+                        {
+                            foreach (var child in Player_Modules.Character_LocalPLayer().getchildren())
+                            {
+                                var p = local.ReadPointer(child.address + offsets.Primitive);
+                                if (local.ReadVec(p + offsets.PartSize) == new Vector3(2, 2, 1) && child.name() != "Torso")
+                                {
+                                    var hrp_prim = local.ReadPointer(child.address + offsets.Primitive);
+                                    CFrame m = memory.read<CFrame>(hrp_prim + offsets.CFrame);
+                                    CFrame tp = new CFrame(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1), m.position);
+                                    for (int i = 0; i < 1000; i++)
+                                    {
+                                        memory.write<CFrame>(hrp_prim + offsets.CFrame, tp);
+                                    }
+                                }
+                            }
+                            Humanoid.PlatformStand(true);
+                            while (dc)
+                            {                                                                
+                                Velocity.Set_AssemblyAngularVelocity(0, 0, 0);
+                                if ((memory.GetAsyncKeyState(0x57) & 0x8000) != 0)
+                                {
+                                    CFrame cam = memory.read<CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
+                                    Vector3 aaa = local.ReadVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset);
+                                    local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(aaa.X + (cam.LookVector.X * iqwe), aaa.Y + (cam.UpVector.Z * -iqwe), aaa.Z + (cam.RightVector.X * -iqwe)));
+                                }
+                                else if ((memory.GetAsyncKeyState(0x53) & 0x8000) != 0)
+                                {
+                                    CFrame cam = memory.read<CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
+                                    Vector3 aaa = local.ReadVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset);
+                                    local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(aaa.X + (cam.LookVector.X * -iqwe), aaa.Y + (cam.UpVector.Z * iqwe), aaa.Z + (cam.RightVector.X * iqwe)));
+                                }
+                                else if ((memory.GetAsyncKeyState(0x41) & 0x8000) != 0)
+                                {
+                                    CFrame cam = memory.read<CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
+                                    Vector3 aaa = local.ReadVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset);
+                                    local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(aaa.X + (cam.RightVector.X * -iqwe), aaa.Y, aaa.Z + (cam.RightVector.Z * iqwe)));
+                                }
+                                else if ((memory.GetAsyncKeyState(0x44) & 0x8000) != 0)
+                                {
+                                    CFrame cam = memory.read<CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
+                                    Vector3 aaa = local.ReadVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset); ;
+                                    local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(aaa.X + (cam.RightVector.X * iqwe), aaa.Y, aaa.Z + (cam.RightVector.Z * -iqwe)));
+                                }                                
+                            }
+                            Humanoid.PlatformStand(false);
+                            local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(0, 0, 0));
+                            dc_m = false;
+                        });
+                        hit12.Start();
+                    }                   
                     ImGui.EndChild();
                 }
                 else if (menu == 2)
@@ -463,7 +581,23 @@ namespace H163_ext_test
                     ImGui.SameLine();
                     if (ImGui.Button("Set_20"))
                         World.Set_SunRaysIntensity(sun23);
-                    ImGui.EndChild();
+
+
+                    ImGui.Text("Fog");
+                    ImGui.SliderFloat("FogStart", ref fog1, 0, 1000);
+                    ImGui.SameLine();
+                    if (ImGui.Button("Set_21"))
+                        World.Set_FogStart(fog1);
+                    ImGui.SliderFloat("FogEnd", ref fog2, 0, 1000);
+                    ImGui.SameLine();
+                    if (ImGui.Button("Set_22"))
+                        World.Set_FogEnd(fog2);
+                    ImGui.ColorEdit3("FogColor",ref colfog);
+                    ImGui.SameLine();
+                    if (ImGui.Button("Set_23"))
+                        World.Set_FogColor(colfog);
+                    ImGui.EndChild();                    
+
                 }
                 else if (menu == 3)
                 {
