@@ -147,33 +147,56 @@ namespace Shoto_tyt_esti
         public static void Set_GlassColor(int al)
         {
             if (al == 0)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.441f, 0)); //White
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.4f, 0, 0)); //White
             if (al == 1)
                 local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0, 0, 0)); //Black
-            if (al == 2)
-                   local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.2f, 0)); //Light-Green
-            if (al == 3)
-                    local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.334f, 0)); //Blue
-            if (al == 4)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.652f, 0)); //Green
-            if (al == 5)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.111f, 0)); //Pink
-            if (al == 6)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.2043f, 0)); //Black-blue
-            if (al == 7)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.2503f, 0)); //Purple
-            if (al == 8)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.2506f, 0)); //Black-pink
-            if (al == 9)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.25097f, 0)); //Turquoise
-            if (al == 10)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.341f, 0)); //Grey
-            if (al == 11)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.371f, 0)); //Light-Green-2
-            if (al == 12)                                                                                                             
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.528f, 0)); //Black-Green
-            if (al == 13)
-                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.0f, 0.537f, 0)); //Orange
+            else if(al == 2)
+                   local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.010f, 0, 0)); //Light-Green
+            else if(al == 3)
+                    local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.007f, 0, 0)); //Blue
+            else if(al == 4)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.6f, 0, 0)); //Default
+            else if(al == 5)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.018f, 0, 0)); //Pink
+            else if(al == 6)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.021f, 0, 0)); //Black-blue
+            else if(al == 7)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.001f, 0, 0)); //Purple
+            else if(al == 8)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.36f, 0, 0)); //Black-pink
+            else if(al == 9)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.005f, 0, 0)); //Turquoise
+            else if(al == 10)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.006f, 0, 0)); //Grey
+            else if(al == 11)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.33f, 0, 0)); //Light-Green-2
+            else if(al == 12)                                                                                                             
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.033f, 0, 0)); //Black-Green
+            else if(al == 13)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.009f, 0, 0)); //Orange
+            else if (al == 14)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.61f, 0, 0)); //Red
+            else if (al == 15)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.011f, 0, 0)); //Brown
+            else if(al == 16)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.023f, 0, 0)); //Light-purple
+            else if (al == 17)
+                local.WriteVec(MatterialColors().address + Offsets2.MaterialColors.Grass, new Vector3(0.029f, 0, 0)); //Light-Blue
+        
+        }
+        //Fog
+        public static void Set_FogStart(float z)
+        {
+            local.WriteFloat(Lighting().address + offsets.FogStart, z);
+        }
+        public static void Set_FogEnd(float z)
+        {
+            local.WriteFloat(Lighting().address + offsets.FogEnd, z);
+        }
+        public static void Set_FogColor(Vector3 soq)
+        {
+            local.WriteVec(Lighting().address + offsets.FogColor, soq);
         }
     }
 }
+
