@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
@@ -50,6 +51,10 @@ namespace H163_ext_test
         bool ew_m = false;
         bool dc = false;
         bool dc_m = false;
+        bool kr = false;
+        bool kr_m = false;
+        bool de = false;
+        bool de_m = false;
         float distance_work = 75;
         float size_hit = 1;
         float gra = 0;
@@ -74,6 +79,8 @@ namespace H163_ext_test
         float z1 = 0;
         float z2 = 0;
         float iqwe = 5;
+        float sde = 50;
+        float kio = 10;
         Vector3 colfog = new Vector3(0,0,0);
         Vector3 atm3 = new Vector3(1, 1, 1);
         Vector3 sasd = new Vector3(1, 1, 1);
@@ -101,8 +108,23 @@ namespace H163_ext_test
             
             if (memory.GetAsyncKeyState(0x11) < 0) //https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
             {
-                hide_gui = !hide_gui;
+                hide_gui = !hide_gui;              
                 Thread.Sleep(200);
+            }
+            if (de && !de_m)
+            {
+                local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + Offsets.FFlags.PhysicsSenderMaxBandwidthBpsScaling, 0);
+                de_m = true;
+            }
+            else if (!de)
+            {
+                local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + Offsets.FFlags.PhysicsSenderMaxBandwidthBpsScaling, 5);
+                de_m = false;
+            }
+            if ((memory.GetAsyncKeyState(0x2D) & 0x8000) != 0)
+            {
+                de = !de;
+                Thread.Sleep(150);
             }
             if (hide_gui)
             {
@@ -282,7 +304,11 @@ namespace H163_ext_test
                         });
                         fly12.Start();
                     }
+                    ImGui.Checkbox("Desync", ref de);
+                    ImGui.SameLine();
+                    ImGui.Text("-key enable (insert)");                    
                     ImGui.Checkbox("Velocity Walk", ref V_walk);
+                    ImGui.SliderFloat("Speed_W", ref kio, 1,200);
                     if (V_walk && !V_walk_mask)
                     {
                         V_walk_mask = true;
@@ -293,22 +319,22 @@ namespace H163_ext_test
                                 if ((memory.GetAsyncKeyState(0x57) & 0x8000) != 0)
                                 {
                                     CFrame_a.CFrame cam = memory.read<CFrame_a.CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
-                                    Velocity.Set_AssemblyLinearVelocity(cam.LookVector.X * 200, -1, cam.LookVector.Z * -200);
+                                    Velocity.Set_AssemblyLinearVelocity(cam.LookVector.X * kio, -1, cam.LookVector.Z * -kio);
                                 }
                                 if ((memory.GetAsyncKeyState(0x53) & 0x8000) != 0)
                                 {
                                     CFrame_a.CFrame cam = memory.read<CFrame_a.CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
-                                    Velocity.Set_AssemblyLinearVelocity(cam.LookVector.X * -200, -1, cam.LookVector.Z * 200);
+                                    Velocity.Set_AssemblyLinearVelocity(cam.LookVector.X * -kio, -1, cam.LookVector.Z * kio);
                                 }
                                 if ((memory.GetAsyncKeyState(0x41) & 0x8000) != 0)
                                 {
                                     CFrame_a.CFrame cam = memory.read<CFrame_a.CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
-                                    Velocity.Set_AssemblyLinearVelocity(cam.RightVector.X * -200, -1, cam.RightVector.Z * 200);
+                                    Velocity.Set_AssemblyLinearVelocity(cam.RightVector.X * -kio, -1, cam.RightVector.Z * kio);
                                 }
                                 if ((memory.GetAsyncKeyState(0x44) & 0x8000) != 0)
                                 {
                                     CFrame_a.CFrame cam = memory.read<CFrame_a.CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
-                                    Velocity.Set_AssemblyLinearVelocity(cam.RightVector.X * 200, -1, cam.RightVector.Z * -200);
+                                    Velocity.Set_AssemblyLinearVelocity(cam.RightVector.X * kio, -1, cam.RightVector.Z * -kio);
                                 }
                             }
                             V_walk_mask = false;
@@ -404,9 +430,9 @@ namespace H163_ext_test
                             }
                         }
                         Humanoid.PlatformStand(true);
+                        Humanoid.AutoRotate(false);
                     }
                     ImGui.SliderFloat("Speed", ref iqwe, 0, 10);
-                    ImGui.Text("WARNING:works only with 3rd person");
                     if (dc && !dc_m)
                     {
                         dc_m = true;
@@ -427,6 +453,7 @@ namespace H163_ext_test
                                 }
                             }
                             Humanoid.PlatformStand(true);
+                            Humanoid.AutoRotate(false);
                             while (dc)
                             {                                                                
                                 Velocity.Set_AssemblyAngularVelocity(0, 0, 0);
@@ -453,14 +480,33 @@ namespace H163_ext_test
                                     CFrame cam = memory.read<CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
                                     Vector3 aaa = local.ReadVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset); ;
                                     local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(aaa.X + (cam.RightVector.X * iqwe), aaa.Y, aaa.Z + (cam.RightVector.Z * -iqwe)));
-                                }                                
+                                }
+                                Thread.Sleep(1);
                             }
                             Humanoid.PlatformStand(false);
                             local.WriteVec(Humanoid.Humanoid_LocalPlayer().address + Offsets2.Humanoid.CameraOffset, new Vector3(0, 0, 0));
+                            Humanoid.AutoRotate(true);
                             dc_m = false;
                         });
                         hit12.Start();
-                    }                   
+                    }
+                    ImGui.Checkbox("SpinBot", ref kr);
+                    ImGui.SliderFloat("Spin-Speed", ref sde,1,100);
+                    if (kr && !kr_m)
+                    {
+                        kr_m = true;
+                        Thread hit12 = new Thread(() =>
+                        {                         
+                            while (kr)
+                            {
+                                Humanoid.AutoRotate(false);
+                                Velocity.Set_AssemblyAngularVelocity(0,sde,0);
+                            }
+                            Humanoid.AutoRotate(true);
+                            kr_m = false;
+                        });
+                        hit12.Start();
+                    }
                     ImGui.EndChild();
                 }
                 else if (menu == 2)
