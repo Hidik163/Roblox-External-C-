@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -56,20 +56,58 @@ namespace Shoto_tyt_esti
                 this.z = pos.Z;
             }
         }
+        public struct Rotation
+        {
+            public float r00, r01, r02;
+            public float r10, r11, r12;
+            public float r20, r21, r22;
+
+            public Vector3 RightVector
+            {
+                get { return new Vector3(r00, r01, r02); }
+            }
+            public Vector3 UpVector
+            {
+                get { return new Vector3(r10, r11, r12); }
+            }
+            public Vector3 LookVector
+            {
+                get { return new Vector3(r20, r21, r22); }
+            }
+            public Rotation(float r00, float r01, float r02,
+                          float r10, float r11, float r12,
+                          float r20, float r21, float r22)
+            {
+                this.r00 = r00; this.r01 = r01; this.r02 = r02;
+                this.r10 = r10; this.r11 = r11; this.r12 = r12;
+                this.r20 = r20; this.r21 = r21; this.r22 = r22;
+            }
+            public Rotation(Vector3 rot1, Vector3 rot2, Vector3 rot3)
+            {
+                this.r00 = rot1.X; this.r01 = rot1.Y; this.r02 = rot1.Z;
+                this.r10 = rot2.X; this.r11 = rot2.Y; this.r12 = rot2.Z;
+                this.r20 = rot3.X; this.r21 = rot3.Y; this.r22 = rot3.Z;
+            }
+        }
         static Swed local = new Swed("RobloxPlayerBeta");
         public static void Pre_Tp(float x, float y, float z)
         {
             foreach (var child in Player_Modules.Character_LocalPLayer().getchildren())
-            {
-                var p = local.ReadPointer(child.address + offsets.Primitive);
-                if (local.ReadVec(p + offsets.PartSize) == new Vector3(2, 2, 1))
+            {            
+                string asxz = child.name();
+                if (asxz != "Torso" && asxz.Length <= 6 && asxz != "Head")
                 {
-                    var hrp_prim = local.ReadPointer(child.address + offsets.Primitive);
-                    CFrame m = memory.read<CFrame>(hrp_prim + offsets.CFrame);
-                    CFrame tp = new CFrame(m.RightVector, m.UpVector, m.LookVector, new Vector3(x, y, z));
-                    for (int i = 0; i < 1000; i++)
+                    var p = local.ReadPointer(child.address + offsets.Primitive);
+                    Vector3 qq = local.ReadVec(p + offsets.PartSize);
+                    if (qq.X >= 2 && qq.Y >= 2)
                     {
-                        memory.write<CFrame>(hrp_prim + offsets.CFrame, tp);
+                        CFrame m = memory.read<CFrame>(p + offsets.CFrame);
+                        CFrame tp = new CFrame(m.RightVector, m.UpVector, m.LookVector, new Vector3(x, y, z));
+                        for (int i = 0; i < 1000; i++)
+                        {
+                            memory.write<CFrame>(p + offsets.CFrame, tp);
+                        }
+                        break;
                     }
                 }
             }
