@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 //https://community-offsets.vercel.app/api/offsets.h
-//Roblox version: version-db4634f0e27d4d36
+//Roblox version: version-80c7b8e578f241ff
 public static class Offsets3
 {
-    public static readonly int AccountAge = 0x30C,
+    public static readonly int AbsolutePositionX = 0x110,
+         AbsolutePositionY = 0x114,
+         AbsoluteSizeX = 0x118,
+         AbsoluteSizeY = 0x11C,
+         AccountAge = 0x30C,
          Adornee = 0xD0,
          Ambient = 0xD8,
          Anchored = 0x1AE,
@@ -33,7 +33,7 @@ public static class Offsets3
          Brightness = 0x120,
          Camera = 0x460,
          CameraFocus = 0x128,
-         CameraMaxZoomDistance = 0x28E,
+         CameraMaxZoomDistance = 0x310,
          CameraMinZoomDistance = 0x314,
          CameraMode = 0x318,
          CameraPosition = 0x11C,
@@ -66,7 +66,7 @@ public static class Offsets3
          DeviceToSwapChain = 0xD0,
          Dimensions = 0x720,
          DisplayName = 0x130,
-         DistributedGameTime = 0x970,
+         DistributedGameTime = 0x480,
          EnableDefaultVoice = 0x1E0,
          FOV = 0x160,
          FakeDataModelFromJobToDataModel = 0x1B0,
@@ -86,7 +86,7 @@ public static class Offsets3
          FrameSizeX = 0x538,
          FrameSizeY = 0x53C,
          GameId = 0x190,
-         GameLoaded = 0x5F8,
+         GameLoaded = 0x43,
          Gender = 0xEA0,
          GeographicLatitude = 0x190,
          GetSetImplementation = 0x90,
@@ -150,8 +150,7 @@ public static class Offsets3
          RenderJobToRenderView = 0x218,
          RenderViewToVisualEngine = 0x10,
          ReplicatorAnimationTrackLimitPerAnimator = 0x67EAC00,
-         RequireBypass = 0x8E9,
-         RichText = 0xAA4,
+         RichText = 0xAA8,
          RigType = 0x1C8,
          Rotation = 0xC8,
          RotationVelocity = 0xFC,
@@ -191,7 +190,7 @@ public static class Offsets3
          UserInputService = 0x3A0,
          Value = 0xD0,
          VerbContainer = 0x3C0,
-         ViewMatrix = 0x4B0,
+         ViewMatrix = 0x450,
          ViewportSize = 0x2E8,
          VisualEnginePointer = 0x7AED020,
          VisualEngineToDataModel1 = 0x700,
