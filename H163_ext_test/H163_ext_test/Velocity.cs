@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -17,12 +17,17 @@ namespace Shoto_tyt_esti
         {
             foreach (var child in Player_Modules.Character_LocalPLayer().getchildren())
             {
-                var p = local.ReadPointer(child.address + offsets.Primitive);
-                if (local.ReadVec(p + offsets.PartSize) == new Vector3(2, 2, 1) && child.name() != "Torso")
+                string asxz = child.name();
+                if (asxz != "Torso" && asxz.Length <= 6 && asxz != "Head")
                 {
-                    var hrp_prim = local.ReadPointer(child.address + offsets.Primitive);
-                    for (int i = 0; i < 100; i++)
-                        local.WriteVec(hrp_prim + Offsets.BasePart.AssemblyLinearVelocity, new Vector3(x, y, z));
+                    var p = local.ReadPointer(child.address + offsets.Primitive);
+                    Vector3 qq = local.ReadVec(p + offsets.PartSize);
+                    if (qq.X >= 2 && qq.Y >= 2)
+                    {
+                        for (int i = 0; i < 100; i++)
+                            local.WriteVec(p + Offsets.BasePart.AssemblyLinearVelocity, new Vector3(x, y, z));
+                        break;
+                    }
                 }
 
             }
@@ -31,15 +36,21 @@ namespace Shoto_tyt_esti
         {
             foreach (var child in Player_Modules.Character_LocalPLayer().getchildren())
             {
-                var p = local.ReadPointer(child.address + offsets.Primitive);
-                if (local.ReadVec(p + offsets.PartSize) == new Vector3(2, 2, 1) && child.name() != "Torso")
+                string asxz = child.name();
+                if (asxz != "Torso" && asxz.Length <= 6 && asxz != "Head")
                 {
-                    var hrp_prim = local.ReadPointer(child.address + offsets.Primitive);
-                    for (int i = 0; i < 100; i++)
-                        local.WriteVec(hrp_prim + Offsets.BasePart.AssemblyAngularVelocity, new Vector3(x, y, z));
+                    var p = local.ReadPointer(child.address + offsets.Primitive);
+                    Vector3 qq = local.ReadVec(p + offsets.PartSize);
+                    if (qq.X >= 2 && qq.Y >= 2)
+                    {
+                        for (int i = 0; i < 100; i++)
+                            local.WriteVec(p + Offsets.BasePart.AssemblyAngularVelocity, new Vector3(x, y, z));
+                        break;
+                    }
                 }
 
             }
         }
     }
 }
+
