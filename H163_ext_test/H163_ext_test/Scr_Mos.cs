@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -13,10 +13,6 @@ namespace Shoto_tyt_esti
     public static class Scr_Mos
     {
         static Swed local = new Swed("RobloxPlayerBeta");
-        //public static IntPtr VisualEngine()
-        //{
-        //    return local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
-        //}
         public static Vector2 world_to_screen(Vector3 world, Vector2 dimensions, Matrix4x4 viewmatrix) //copy paste
         {
             Vector4 quaternion = new Vector4();
@@ -38,14 +34,6 @@ namespace Shoto_tyt_esti
             return new Vector2((dimensions.X / 2 * ndc.X) + (ndc.X + dimensions.X / 2), -(dimensions.Y / 2 * ndc.Y) + (ndc.Y + dimensions.Y / 2));
 
         }
-        //public static Vector2 Dimensions()
-        //{
-        //    return memory.read<Vector2>(VisualEngine() + offsets.Dimensions);
-        //}
-        //public static Matrix4x4 viewmatrix()
-        //{
-        //    return memory.read<Matrix4x4>(VisualEngine() + offsets.viewmatrix);
-        //}
         public struct POINT
         {
             public int X;
@@ -91,7 +79,12 @@ namespace Shoto_tyt_esti
         {
             mouse_event(MOUSEEVENTF_MOVE, dx, dy, 0, 0);
         }
-
+        public static void Click()
+        {
+            mouse_event(0x0002, 0, 0, 0, 0);
+            Thread.Sleep(10);
+            mouse_event(0x0004, 0, 0, 0, 0);
+        }
         public static void MoveAbsolute(int x, int y)
         {
             int screenWidth = 1920;
