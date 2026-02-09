@@ -85,20 +85,6 @@ namespace Shoto_tyt_esti
             Thread.Sleep(10);
             mouse_event(0x0004, 0, 0, 0, 0);
         }
-        public static void MoveAbsolute(int x, int y)
-        {
-            int screenWidth = 1920;
-            int screenHeight = 1080;
-
-            int absX = x * 65535 / screenWidth;
-            int absY = y * 65535 / screenHeight;
-
-            SendInput(1, new[] {
-                new INPUT {
-                    type = INPUT_MOUSE,
-                    mi = new MOUSEINPUT { dx = absX, dy = absY, dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE }
-                }
-            }, Marshal.SizeOf<INPUT>());
-        }
     }
 }
+
