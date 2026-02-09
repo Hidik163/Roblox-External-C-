@@ -11,7 +11,7 @@ namespace Shoto_tyt_esti
     public static class base_s
     {
         static Swed local = new Swed("RobloxPlayerBeta");
-        public static IntPtr getdatamodel() // i will teach later how to get scheduler too or script context its easier
+        public static IntPtr getdatamodel()
         {
             var fakeahhdm = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.FakeDataModelPointer);//FakeDataModelPointer
             return local.ReadPointer(fakeahhdm + offsets.FakeDataModelToDataModel);//FakeDataModelToDataModel
@@ -36,3 +36,4 @@ namespace Shoto_tyt_esti
     }
 
 }
+
