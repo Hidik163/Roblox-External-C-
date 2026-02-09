@@ -7,6 +7,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using ClickableTransparentOverlay;
 using H163_ext_test;
@@ -17,7 +18,9 @@ using SharpDX.Direct3D11;
 using Shoto_tyt_esti;
 using Swed64;
 using Vortice.Mathematics;
+using static Offsets;
 using static Shoto_tyt_esti.CFrame_a;
+using Humanoid = Shoto_tyt_esti.Humanoid;
 namespace H163_ext_test
 {
     public class RenderClass : Overlay
@@ -27,9 +30,12 @@ namespace H163_ext_test
         int zis_color = 0;
         int metodg = 0;
         int tg_part = 0;
+        int map_dis = 0;
+        string[] map_disain = { "Square", "Square_Filled"};
         string[] prties = { "Head", "Torso/UpperTorso","HumanoidRootPart"};
         string[] metod = {"Mouse","Camera"};
         string[] parts = { "Head", "Torso/UpperTorso" };
+        bool map_vis = true;
         bool attach = false;
         bool lock_walk = false;
         bool lock_walk_mask = false;
@@ -73,6 +79,9 @@ namespace H163_ext_test
         bool tm_tg = false;
         bool esp_team_check = false;
         bool esp_distance = false;
+        bool tp_linq = false;
+        bool hit_tmch = false;
+        bool redare = false;
         float distance_work = 75;
         float size_hit = 1;
         float gra = 0;
@@ -101,6 +110,9 @@ namespace H163_ext_test
         float kio = 10;
         float FVW = 100;
         float oqw = 1;
+        float f_asp = 100;
+        float tg_dist = 100;
+        float per_x = 4;
         Vector3 colfog = new Vector3(0,0,0);
         Vector3 atm3 = new Vector3(1, 1, 1);
         Vector3 sasd = new Vector3(1, 1, 1);
@@ -110,6 +122,8 @@ namespace H163_ext_test
         Vector3 c4 = new Vector3(1, 1, 1);
         Vector3 ale = new Vector3(1, 1, 1);
         Vector3 get_ale = new Vector3(1, 1, 1);
+        Vector3 pl_pos_head = new Vector3(0,0,0);
+        Vector2 radar_size = new Vector2(300, 300);
         int menu = 1;
         int ssiaqw = 0;
         float speed = 22;
@@ -119,12 +133,18 @@ namespace H163_ext_test
         static Swed local = new Swed("RobloxPlayerBeta");
         static Vector4 suport_cvet = new Vector4(1, 1, 0, 1);
         static Vector4 suport_nik_cvet = new Vector4(0, 1, 0, 1);
+        static Vector4 radar_me = new Vector4(1, 0, 0, 1);
+        static Vector4 radar_no_me = new Vector4(0, 1, 0, 1);
+        static Vector4 map_color = new Vector4(0, 0, 1, 1);
         Vector4 gui_lab_bbt = new Vector4(0.5f,0.5f,0,1);
         Vector4 gui_lab_txt = new Vector4(0.9f, 0.9f, 0, 1);
         static Vector4 fov_color = new Vector4(0.5f, 0.5f, 0, 1);
         uint cvet = ImGui.ColorConvertFloat4ToU32(suport_cvet);
         uint nik_cvet = ImGui.ColorConvertFloat4ToU32(suport_nik_cvet);
         uint fv_cla = ImGui.ColorConvertFloat4ToU32(fov_color);
+        uint rd_1 = ImGui.ColorConvertFloat4ToU32(radar_me);
+        uint rd_2 = ImGui.ColorConvertFloat4ToU32(radar_no_me);
+        uint rd_map = ImGui.ColorConvertFloat4ToU32(map_color);
         Vector2 fuck_yeeee = new Vector2(-1, -1);
         Vector2 sa3 = new Vector2(-1, -1);
         Vector2 part1 = new Vector2(-1, -1);
@@ -295,6 +315,7 @@ namespace H163_ext_test
                         No_Cool_Down_Jump.Start();
                     }
                     ImGui.Checkbox("Fly", ref fly);
+                    ImGui.SliderFloat("fly speed",ref f_asp, 0, 300);
                     if (fly && !fly_m)
                     {
                         fly_m = true;
@@ -306,22 +327,22 @@ namespace H163_ext_test
                                 if ((memory.GetAsyncKeyState(0x57) & 0x8000) != 0)
                                 {
                                     CFrame_a.CFrame cam = memory.read<CFrame_a.CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
-                                    Velocity.Set_AssemblyLinearVelocity(cam.LookVector.X * 200, cam.UpVector.Z * -200, cam.LookVector.Z * -200);
+                                    Velocity.Set_AssemblyLinearVelocity(cam.LookVector.X * f_asp, cam.UpVector.Z * -f_asp, cam.LookVector.Z * -f_asp);
                                 }
                                 else if ((memory.GetAsyncKeyState(0x53) & 0x8000) != 0)
                                 {
                                     CFrame_a.CFrame cam = memory.read<CFrame_a.CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
-                                    Velocity.Set_AssemblyLinearVelocity(cam.LookVector.X * -200, cam.UpVector.Z * 200, cam.LookVector.Z * 200);
+                                    Velocity.Set_AssemblyLinearVelocity(cam.LookVector.X * -f_asp, cam.UpVector.Z * f_asp, cam.LookVector.Z * f_asp);
                                 }
                                 else if ((memory.GetAsyncKeyState(0x41) & 0x8000) != 0)
                                 {
                                     CFrame_a.CFrame cam = memory.read<CFrame_a.CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
-                                    Velocity.Set_AssemblyLinearVelocity(cam.RightVector.X * -200, 0, cam.RightVector.Z * 200);
+                                    Velocity.Set_AssemblyLinearVelocity(cam.RightVector.X * -f_asp, 0, cam.RightVector.Z * f_asp);
                                 }
                                 else if ((memory.GetAsyncKeyState(0x44) & 0x8000) != 0)
                                 {
                                     CFrame_a.CFrame cam = memory.read<CFrame_a.CFrame>(base_s.Camera() + Offsets.Camera.Rotation);
-                                    Velocity.Set_AssemblyLinearVelocity(cam.RightVector.X * 200, 0, cam.RightVector.Z * -200);
+                                    Velocity.Set_AssemblyLinearVelocity(cam.RightVector.X * f_asp, 0, cam.RightVector.Z * -f_asp);
                                 }
                                 else
                                 {
@@ -390,20 +411,30 @@ namespace H163_ext_test
                     ImGui.NewLine();
                     ImGui.Text("HitBox Expander");                  
                     ImGui.Checkbox("Enable_hit", ref hit);
+                    
                     ImGui.ListBox("Target Part", ref part_target, prties, prties.Length);
+                    ImGui.Checkbox("Team Check",ref hit_tmch);
                     ImGui.SliderFloat("Size", ref size_hit, 1, 100);
                     if (hit && !hit_m)
                     {
                         hit_m = true;
                         Thread hit12 = new Thread(() =>
                         {
-                            string me_name = Player_Modules.LocalPlayer().name();
                             while (hit)
                             {
+                                var namme = Player_Modules.LocalPlayer();
+                                string me_name = namme.name();
                                 foreach (var child in Player_Modules._players().getchildren())
                                 {
                                     if (child.name() != me_name)
                                     {
+                                        if(hit_tmch)
+                                        {
+                                            var team = local.ReadPointer(namme.address + Offsets.Player.Team);
+                                            var team_pl = local.ReadPointer(child.address + Offsets.Player.Team);
+                                            if (team == team_pl)
+                                                continue;
+                                        }
                                         var c = local.ReadPointer(child.address + Offsets2.Player.Character);
                                         if (c == 0) continue;
                                         var c2 = new instance(c);
@@ -491,6 +522,14 @@ namespace H163_ext_test
                         }
                         Humanoid.PlatformStand(true);
                         Humanoid.AutoRotate(false);
+                    }
+                    if(ImGui.Button(" TP Camera Position "))
+                    {
+                        Vector3 pos = local.ReadVec(base_s.Camera() + offsets.CameraPos);
+                        var s = Humanoid.Humanoid_LocalPlayer().address;
+                        Vector3 aaa = local.ReadVec(s + Offsets2.Humanoid.CameraOffset);
+                        local.WriteVec(s + Offsets2.Humanoid.CameraOffset, new Vector3(0, aaa.Y,0));
+                        CFrame_a.Pre_Tp(pos.X,pos.Y,pos.Z);
                     }
                     ImGui.SliderFloat("Speed", ref iqwe, 0, 10);
                     if (dc && !dc_m)
@@ -859,6 +898,7 @@ namespace H163_ext_test
                     ImGui.Text("TriggerBot");
                     ImGui.Checkbox("_Enable", ref tg);
                     ImGui.Checkbox("_Team Check", ref tm_tg);
+                    ImGui.SliderFloat("_Distance", ref tg_dist,50,300);
                     if (tg && !tg_m)
                     {
                         tg_m = true;
@@ -938,18 +978,25 @@ namespace H163_ext_test
                                 {
                                     int w = aqw.X - (int)a.X;
                                     int w2 = aqw.Y - (int)a.Y;
-                                    if (((w <= 21) && (w >= -21)) && ((w2 <= 80) && (w2 >= -8)) && (clos.X <= 25 && clos.Y <= 25))
-                                        Scr_Mos.Click();
-                                    else if (((w <= 17.5) && (w >= -17.5)) && ((w2 <= 70) && (w2 >= -8)) && (clos.X <= 50 && clos.Y <= 50))
-                                        Scr_Mos.Click();
-                                    else if (((w <= 13.5) && (w >= -13.5)) && ((w2 <= 50) && (w2 >= -8)) && (clos.X <= 100 && clos.Y <= 100))
-                                        Scr_Mos.Click();
-                                    else if (((w <= 9.5) && (w >= -9.5)) && ((w2 <= 35) && (w2 >= -8)) && (clos.X <= 150 && clos.Y <= 150))
-                                        Scr_Mos.Click();
-                                    else if (((w <= 8) && (w >= -8)) && ((w2 <= 25) && (w2 >= -4)) && (clos.X <= 200 && clos.Y <= 200))
-                                        Scr_Mos.Click();
-                                    else if (((w <= 5) && (w >= -5)) && ((w2 <= 20) && (w2 >= -2)) && (clos.X <= 300 && clos.Y <= 300))
-                                        Scr_Mos.Click();
+                                    if (tg_dist <= 100)
+                                    {
+                                        if (((w <= 21) && (w >= -21)) && ((w2 <= 80) && (w2 >= -8)) && (clos.X <= 25 && clos.Y <= 25))
+                                            Scr_Mos.Click();
+                                        else if (((w <= 17.5) && (w >= -17.5)) && ((w2 <= 70) && (w2 >= -8)) && (clos.X <= 50 && clos.Y <= 50))
+                                            Scr_Mos.Click();
+                                        else if (((w <= 13.5) && (w >= -13.5)) && ((w2 <= 50) && (w2 >= -8)) && (clos.X <= 100 && clos.Y <= 100))
+                                            Scr_Mos.Click();
+                                    }
+                                    else if (tg_dist <= 200)
+                                    {
+                                        if (((w <= 9.5) && (w >= -9.5)) && ((w2 <= 35) && (w2 >= -8)) && (clos.X <= 150 && clos.Y <= 150))
+                                            Scr_Mos.Click();
+                                        else if (((w <= 8) && (w >= -8)) && ((w2 <= 25) && (w2 >= -4)) && (clos.X <= 200 && clos.Y <= 200))
+                                            Scr_Mos.Click();
+                                    }
+                                    else if(tg_dist <= 300)
+                                        if (((w <= 5) && (w >= -5)) && ((w2 <= 20) && (w2 >= -2)) && (clos.X <= 300 && clos.Y <= 300))
+                                            Scr_Mos.Click();
                                 }
                                 
                             }
@@ -980,25 +1027,47 @@ namespace H163_ext_test
                     {
                         if (esp_flagsex)
                             espaw = true;
-                        else if (!FOV_flagsex)
+                        else if (!FOV_flagsex && !redare)
                             espaw = false;
                     }                   
                     ImGui.Checkbox("Nickname", ref nickname);
                     ImGui.Checkbox("Health", ref heal_flag);
                     ImGui.Checkbox("Center_Lines", ref lines);
                     ImGui.Checkbox("Down_Lines", ref lines2);
+                    ImGui.Checkbox("Top_Lines", ref tp_linq);
                     ImGui.Checkbox("Square", ref sq);
                     ImGui.Checkbox("Circle", ref ecl);
                     ImGui.Checkbox("skeleton", ref sk);
                     ImGui.Checkbox("Team Check", ref esp_team_check);
                     ImGui.Checkbox("Distance", ref esp_distance);
                     ImGui.Checkbox("skeleton_2(coming)", ref sk2);
-                    ImGui.SetCursorPos(new Vector2(190, 290));
-                    ImGui.Text("ESP(settings)");
-                    if(ImGui.ColorEdit4("Nickname color",ref suport_nik_cvet))
+                    ImGui.NewLine();
+                    ImGui.Text("                         ESP(settings)");
+                    if (ImGui.ColorEdit4("Nickname color", ref suport_nik_cvet))
                         nik_cvet = ImGui.ColorConvertFloat4ToU32(suport_nik_cvet);
-                    if(ImGui.ColorEdit4("Main color", ref suport_cvet))
+                    if (ImGui.ColorEdit4("Main color", ref suport_cvet))
                         cvet = ImGui.ColorConvertFloat4ToU32(suport_cvet);
+                    ImGui.NewLine();
+                    ImGui.Text("                             Radar");
+                    if(ImGui.Checkbox("Radar", ref redare))
+                    {
+                        if (redare)
+                            espaw = true;
+                        else if(!FOV_flagsex && !esp_flagsex)
+                            espaw = false;
+                    }
+                    ImGui.SliderFloat("Size_Map_X", ref radar_size.X, 100, 1910);
+                    ImGui.SliderFloat("Size_Map_Y", ref radar_size.Y, 100, 1070);
+                    ImGui.ListBox("Map design",ref map_dis, map_disain,map_disain.Length);
+                    ImGui.Checkbox("Visible map", ref map_vis);
+                    ImGui.Checkbox("_Team Check", ref esp_team_check);
+                    ImGui.SliderFloat("Size_Persons", ref per_x, 1, 20);
+                    if (ImGui.ColorEdit4("Me color", ref radar_me))
+                        rd_1 = ImGui.ColorConvertFloat4ToU32(radar_me);
+                    if (ImGui.ColorEdit4("Enemy color", ref radar_no_me))
+                        rd_2 = ImGui.ColorConvertFloat4ToU32(radar_no_me);
+                    if (ImGui.ColorEdit4("Map color", ref map_color))
+                        rd_map = ImGui.ColorConvertFloat4ToU32(map_color);                    
                     ImGui.EndChild();
                 }
                 else if (menu == 6)
@@ -1076,16 +1145,27 @@ namespace H163_ext_test
                     var aqw = Scr_Mos.GetMousePosition();
                     draw.AddCircle(new Vector2(aqw.X, aqw.Y), FVW, fv_cla,0,oqw);
                 }
-                if (esp_flagsex)
+                if (esp_flagsex || redare)
                 {
                     var vis = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
                     var dim = memory.read<Vector2>(vis + offsets.Dimensions);
                     var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                     Vector3 aqsw = new Vector3(0,0,0);
-                    if(esp_distance)
+                    if(esp_distance || redare)
                     {
                         var pr = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
                         aqsw = local.ReadVec(pr + offsets.Position);
+                        if(redare)
+                        {
+                            if (map_vis)
+                            {
+                                if (map_dis == 0)
+                                    draw.AddRect(new Vector2(10, 10), new Vector2(radar_size.X, radar_size.Y), rd_map, 10, ImDrawFlags.None, 4);
+                                else if (map_dis == 1)
+                                    draw.AddRectFilled(new Vector2(10, 10), new Vector2(radar_size.X, radar_size.Y), rd_map, 10);
+                            }
+                            draw.AddRectFilled(new Vector2((radar_size.X + 10) / 2, (radar_size.Y + 10) / 2), new Vector2((radar_size.X + 10) / 2 + per_x, (radar_size.Y + 10) / 2 + per_x), rd_1, 10);
+                        }
                     }
                     var namme = Player_Modules.LocalPlayer();
                     string name_me = namme.name();
@@ -1104,14 +1184,14 @@ namespace H163_ext_test
                             var ch3 = local.ReadPointer(i.address + Offsets2.Player.Character);
                             if (ch3 == 0) continue;
                             var s3 = new instance(ch3);
-                            byte bae;
+                            byte bae = 7;
                             if (sk)
                                 bae = 0;
                             else if (heal_flag)
                                 bae = 5;
-                            else if (!nickname && !heal_flag && !lines && !lines2 && !sk && !ecl && !sq && !esp_distance)
+                            else if (!nickname && !heal_flag && !lines && !lines2 && !sk && !ecl && !sq && !esp_distance && !redare && !tp_linq)
                                 continue;
-                            else
+                            else if(redare || nickname || lines || lines2 || ecl || sq || esp_distance || tp_linq)
                                 bae = 6;
                             if (bae != 7)
                             {
@@ -1127,7 +1207,8 @@ namespace H163_ext_test
                                         sa3 = Scr_Mos.world_to_screen(pos, dim, dim1);
                                         if(esp_distance)
                                             ssiaqw = (int)(Math.Abs(aqsw.X - pos.X) + Math.Abs(aqsw.Y - pos.Y) + Math.Abs(aqsw.Z - pos.Z));
-
+                                        if (redare)
+                                            pl_pos_head = pos;
                                     }
                                     else if (name == "Humanoid" && heal_flag)
                                     {
@@ -1170,6 +1251,7 @@ namespace H163_ext_test
                                     }
 
                                 }
+                                if(esp_flagsex)
                                 if (sa3.X >= 0 && sa3.Y >= 0 && sa3.X <= 1920 && sa3.Y <= 1080)
                                 {
                                     if (nickname)
@@ -1199,15 +1281,24 @@ namespace H163_ext_test
                                         draw.AddLine(new Vector2(960, 540), sa3, cvet);
                                     if (lines2)
                                         draw.AddLine(new Vector2(960, 1080), sa3, cvet);
+                                    if(tp_linq)
+                                        draw.AddLine(new Vector2(960, 0), sa3, cvet);
                                     if (sq)
                                         draw.AddRect(new Vector2(sa3.X - 20, sa3.Y + 40), new Vector2(sa3.X + 20, sa3.Y - 10), cvet);
                                     if (ecl)
                                         draw.AddCircle(sa3, 30, cvet);
                                     if (sk)
-                                        draw.AddLine(fuck_yeeee, sa3, cvet);
-                                    
+                                        draw.AddLine(fuck_yeeee, sa3, cvet);                                                                        
                                 }
-                                if (sk)
+                                if (redare)
+                                {                                   
+                                    var s = aqsw - pl_pos_head;
+                                    float x = s.X + (radar_size.X + 10) / 2;
+                                    float z = s.Z + (radar_size.Y + 10) / 2;
+                                    if(x <= radar_size.X && z <= radar_size.Y && x >= 10 && z >= 10)
+                                        draw.AddRectFilled(new Vector2(x, z), new Vector2(x + per_x, z + per_x), rd_2, 10);
+                                }
+                                if (sk && esp_flagsex)
                                     if (fuck_yeeee.X >= 0 && fuck_yeeee.X <= 1920 && fuck_yeeee.Y >= 0 && fuck_yeeee.Y <= 1080)
                                     {
                                         draw.AddLine(fuck_yeeee, part1, cvet);
@@ -1225,6 +1316,7 @@ namespace H163_ext_test
         }
     }
 }
+
 
 
 
