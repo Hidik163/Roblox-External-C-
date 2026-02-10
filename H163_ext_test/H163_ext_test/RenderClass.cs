@@ -19,132 +19,138 @@ using Shoto_tyt_esti;
 using Swed64;
 using Vortice.Mathematics;
 using static Offsets;
+using System.Text;
 using static Shoto_tyt_esti.CFrame_a;
 using Humanoid = Shoto_tyt_esti.Humanoid;
 namespace H163_ext_test
 {
     public class RenderClass : Overlay
     {
+        [DllImport("user32.dll")]
+        static extern bool SetWindowDisplayAffinity(IntPtr hWnd, uint dwAffinity);
         string[] cl_gr = { "White", "Black", "Light-Green", "Blue", "Default-Green", "Pink", "Black-blue", "Purple", "Black-pink", "Turquoise", "Grey", "Light-Green-2", "Black-Green", "Orange","Red", "Brown", "Light-purple", "Light-Blue" };
-        int part_target = 0;
-        int zis_color = 0;
-        int metodg = 0;
-        int tg_part = 0;
-        int map_dis = 0;
+        public static int part_target = 0;
+        public static int zis_color = 0;
+        public static int metodg = 0;
+        public static int tg_part = 0;
+        public static int map_dis = 0;
         string[] map_disain = { "Square", "Square_Filled"};
+        Random rnd = new Random();
         string[] prties = { "Head", "Torso/UpperTorso","HumanoidRootPart"};
         string[] metod = {"Mouse","Camera"};
         string[] parts = { "Head", "Torso/UpperTorso" };
-        bool map_vis = true;
-        bool attach = false;
-        bool lock_walk = false;
-        bool lock_walk_mask = false;
-        bool noclip = false;
-        bool noclip_mask = false;
-        bool inf_jump = false;
-        bool inf_jump_m = false;
-        bool no_cd = false;
-        bool no_cd_m = false;
-        bool fly = false;
-        bool fly_m = false;
-        bool V_walk = false;
-        bool V_walk_mask = false;
-        bool hit = false;
-        bool hide_gui = true;
-        bool hit_m = false;
-        bool aim = false;
-        bool aim_m = false;
-        bool espaw = false;
-        bool nickname = false;
-        bool lines = false;
-        bool lines2 = false;
-        bool sq = false;
-        bool ecl = false;
-        bool sk = false;
-        bool sk2 = false;
-        bool ew = false;
-        bool ew_m = false;
-        bool dc = false;
-        bool dc_m = false;
-        bool kr = false;
-        bool kr_m = false;
-        bool de = false;
-        bool de_m = false;
-        bool tg = false;
-        bool tg_m = false;
-        bool FOV_flagsex = false;
-        bool esp_flagsex = false;
-        bool heal_flag = false;
-        bool tm_ai = false;
-        bool tm_tg = false;
-        bool esp_team_check = false;
-        bool esp_distance = false;
-        bool tp_linq = false;
-        bool hit_tmch = false;
-        bool redare = false;
-        float distance_work = 75;
-        float size_hit = 1;
-        float gra = 0;
-        float exp = 0;
-        float sun_sz = 1;
-        float moon_sz = 1;
-        float as1 = 0;
-        float as2 = 0;
-        float as3 = 0;
-        float blome = 0;
-        float blome2 = 0;
-        float blome3 = 0;
-        float as4 = 0;
-        float as5 = 0;
-        float atm = 0;
-        float atm2 = 0;
-        float sun23 = 0;
-        float fog1 = 0;
-        float fog2 = 1000;
-        float fvo = 1.7f;
-        float z = 0;
-        float z1 = 0;
-        float z2 = 0;
-        float iqwe = 5;
-        float sde = 50;
-        float kio = 10;
-        float FVW = 100;
-        float oqw = 1;
-        float f_asp = 100;
-        float tg_dist = 100;
-        float per_x = 4;
-        Vector3 colfog = new Vector3(0,0,0);
-        Vector3 atm3 = new Vector3(1, 1, 1);
-        Vector3 sasd = new Vector3(1, 1, 1);
-        Vector3 colorqwe = new Vector3(1, 1, 1);
-        Vector3 c2 = new Vector3(1, 1, 1);
-        Vector3 c3 = new Vector3(1, 1, 1);
-        Vector3 c4 = new Vector3(1, 1, 1);
-        Vector3 ale = new Vector3(1, 1, 1);
-        Vector3 get_ale = new Vector3(1, 1, 1);
-        Vector3 pl_pos_head = new Vector3(0,0,0);
-        Vector2 radar_size = new Vector2(300, 300);
-        int menu = 1;
-        int ssiaqw = 0;
-        float speed = 22;
-        float power = 16;
-        float heqw = 0;
-        float hea = 0;
+        public static uint the_host = 0;
+        public static bool st_prof = false;
+        public static bool map_vis = true;
+        public static bool attach = false;
+        public static bool lock_walk = false;
+        public static bool lock_walk_mask = false;
+        public static bool noclip = false;
+        public static bool noclip_mask = false;
+        public static bool inf_jump = false;
+        public static bool inf_jump_m = false;
+        public static bool no_cd = false;
+        public static bool no_cd_m = false;
+        public static bool fly = false;
+        public static bool fly_m = false;
+        public static bool V_walk = false;
+        public static bool V_walk_mask = false;
+        public static bool hit = false;
+        public static bool hide_gui = true;
+        public static bool hit_m = false;
+        public static bool aim = false;
+        public static bool aim_m = false;
+        public static bool espaw = false;
+        public static bool nickname = false;
+        public static bool lines = false;
+        public static bool lines2 = false;
+        public static bool sq = false;
+        public static bool ecl = false;
+        public static bool sk = false;
+        public static bool sk2 = false;
+        public static bool ew = false;
+        public static bool ew_m = false;
+        public static bool dc = false;
+        public static bool dc_m = false;
+        public static bool kr = false;
+        public static bool kr_m = false;
+        public static bool de = false;
+        public static bool de_m = false;
+        public static bool tg = false;
+        public static bool tg_m = false;
+        public static bool FOV_flagsex = false;
+        public static bool esp_flagsex = false;
+        public static bool heal_flag = false;
+        public static bool tm_ai = false;
+        public static bool tm_tg = false;
+        public static bool esp_team_check = false;
+        public static bool esp_distance = false;
+        public static bool tp_linq = false;
+        public static bool hit_tmch = false;
+        public static bool redare = false;
+        public static float distance_work = 75;
+        public static float size_hit = 1;
+        public static float gra = 0;
+        public static float exp = 0;
+        public static float sun_sz = 1;
+        public static float moon_sz = 1;
+        public static float as1 = 0;
+        public static float as2 = 0;
+        public static float as3 = 0;
+        public static float blome = 0;
+        public static float blome2 = 0;
+        public static float blome3 = 0;
+        public static float as4 = 0;
+        public static float as5 = 0;
+        public static float atm = 0;
+        public static float atm2 = 0;
+        public static float sun23 = 0;
+        public static float fog1 = 0;
+        public static float fog2 = 1000;
+        public static float fvo = 1.7f;
+        public static float z = 0;
+        public static float z1 = 0;
+        public static float z2 = 0;
+        public static float iqwe = 5;
+        public static float sde = 50;
+        public static float kio = 10;
+        public static float FVW = 100;
+        public static float oqw = 1;
+        public static float f_asp = 100;
+        public static float tg_dist = 100;
+        public static float per_x = 4;
+        public static Vector3 colfog = new Vector3(0,0,0);
+        public static Vector3 atm3 = new Vector3(1, 1, 1);
+        public static Vector3 sasd = new Vector3(1, 1, 1);
+        public static Vector3 colorqwe = new Vector3(1, 1, 1);
+        public static Vector3 c2 = new Vector3(1, 1, 1);
+        public static Vector3 c3 = new Vector3(1, 1, 1);
+        public static Vector3 c4 = new Vector3(1, 1, 1);
+        public static Vector3 ale = new Vector3(1, 1, 1);
+        public static Vector3 get_ale = new Vector3(1, 1, 1);
+        public static Vector3 pl_pos_head = new Vector3(0,0,0);
+        public static Vector2 radar_size = new Vector2(300, 300);
+        public static int menu = 1;
+        public static int ssiaqw = 0;
+        public static float speed = 22;
+        public static float power = 16;
+        public static float heqw = 0;
+        public static float hea = 0;
         static Swed local = new Swed("RobloxPlayerBeta");
-        static Vector4 suport_cvet = new Vector4(1, 1, 0, 1);
-        static Vector4 suport_nik_cvet = new Vector4(0, 1, 0, 1);
-        static Vector4 radar_me = new Vector4(1, 0, 0, 1);
-        static Vector4 radar_no_me = new Vector4(0, 1, 0, 1);
-        static Vector4 map_color = new Vector4(0, 0, 1, 1);
-        Vector4 gui_lab_bbt = new Vector4(0.5f,0.5f,0,1);
-        Vector4 gui_lab_txt = new Vector4(0.9f, 0.9f, 0, 1);
-        static Vector4 fov_color = new Vector4(0.5f, 0.5f, 0, 1);
-        uint cvet = ImGui.ColorConvertFloat4ToU32(suport_cvet);
-        uint nik_cvet = ImGui.ColorConvertFloat4ToU32(suport_nik_cvet);
-        uint fv_cla = ImGui.ColorConvertFloat4ToU32(fov_color);
-        uint rd_1 = ImGui.ColorConvertFloat4ToU32(radar_me);
-        uint rd_2 = ImGui.ColorConvertFloat4ToU32(radar_no_me);
-        uint rd_map = ImGui.ColorConvertFloat4ToU32(map_color);
+        public static Vector4 suport_cvet = new Vector4(1, 1, 0, 1);
+        public static Vector4 suport_nik_cvet = new Vector4(0, 1, 0, 1);
+        public static Vector4 radar_me = new Vector4(1, 0, 0, 1);
+        public static Vector4 radar_no_me = new Vector4(0, 1, 0, 1);
+        public static Vector4 map_color = new Vector4(0, 0, 1, 1);
+        public static Vector4 gui_lab_bbt = new Vector4(0.5f,0.5f,0,1);
+        public static Vector4 gui_lab_txt = new Vector4(0.9f, 0.9f, 0, 1);
+        public static Vector4 fov_color = new Vector4(0.5f, 0.5f, 0, 1);
+        public static uint cvet = ImGui.ColorConvertFloat4ToU32(suport_cvet);
+        public static uint nik_cvet = ImGui.ColorConvertFloat4ToU32(suport_nik_cvet);
+        public static uint fv_cla = ImGui.ColorConvertFloat4ToU32(fov_color);
+        public static uint rd_1 = ImGui.ColorConvertFloat4ToU32(radar_me);
+        public static uint rd_2 = ImGui.ColorConvertFloat4ToU32(radar_no_me);
+        public static uint rd_map = ImGui.ColorConvertFloat4ToU32(map_color);
         Vector2 fuck_yeeee = new Vector2(-1, -1);
         Vector2 sa3 = new Vector2(-1, -1);
         Vector2 part1 = new Vector2(-1, -1);
@@ -186,6 +192,8 @@ namespace H163_ext_test
                 style.Colors[(int)ImGuiCol.Border] = gui_lab_bbt;
                 style.Colors[(int)ImGuiCol.TitleBgActive] = gui_lab_bbt;
                 ImGui.Begin($"Hidik163_exe", ImGuiWindowFlags.NoResize);
+                IntPtr hwnd = Process.GetCurrentProcess().MainWindowHandle;
+                SetWindowDisplayAffinity(hwnd, the_host);
                 ImGui.SetCursorPos(new Vector2(500, 30));
                 ImGui.Text($"Attach ({attach})");
                 ImGui.SetCursorPos(new Vector2(520, 50));
@@ -1079,6 +1087,41 @@ namespace H163_ext_test
                     ImGui.Separator();
                     ImGui.ColorEdit4("Text",ref gui_lab_txt);
                     ImGui.ColorEdit4("Main", ref gui_lab_bbt);
+                    if(ImGui.Checkbox("StreamProof",ref st_prof))
+                    {
+                        if (st_prof)
+                            the_host = 0x11;
+                        else
+                            the_host = 0;
+                    }
+                    ImGui.Text("                               Config");
+                    if (ImGui.Button("  Save Config  "))
+                    {
+                        Config_sys.Save();
+                    }
+                    ImGui.NewLine();
+                    ImGui.Text("configs\n{");
+                    string[] files = Directory.GetFiles("Configs");
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        ImGui.Text(files[i]);
+                        ImGui.SameLine();
+                        if(ImGui.Button($"Load_{i}"))
+                        {
+                            StreamReader config = File.OpenText(files[i]);
+                            int the_pit = 0;
+                            while(true)
+                            {
+                                string st = config.ReadLine();
+                                if (st == null) break;
+                                Config_sys.Load(st, the_pit);                                
+                                the_pit++;
+                            }
+                            config.Close();
+                        }
+                    }
+                    ImGui.Text("}");  
+
                     ImGui.EndChild();
                 }
                 else if (menu == 7)
@@ -1316,7 +1359,6 @@ namespace H163_ext_test
         }
     }
 }
-
 
 
 
