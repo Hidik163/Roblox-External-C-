@@ -88,6 +88,10 @@ namespace H163_ext_test
         public static bool tp_linq = false;
         public static bool hit_tmch = false;
         public static bool redare = false;
+        public static bool flag_1 = false;
+        public static bool flag_2 = false;
+        bool frez_all = false;
+        bool show_team = false;
         public static float distance_work = 75;
         public static float size_hit = 1;
         public static float gra = 0;
@@ -119,6 +123,7 @@ namespace H163_ext_test
         public static float f_asp = 100;
         public static float tg_dist = 100;
         public static float per_x = 4;
+        public static float square_size = 1;
         public static Vector3 colfog = new Vector3(0,0,0);
         public static Vector3 atm3 = new Vector3(1, 1, 1);
         public static Vector3 sasd = new Vector3(1, 1, 1);
@@ -131,11 +136,14 @@ namespace H163_ext_test
         public static Vector3 pl_pos_head = new Vector3(0,0,0);
         public static Vector2 radar_size = new Vector2(300, 300);
         public static int menu = 1;
-        public static int ssiaqw = 0;
         public static float speed = 22;
         public static float power = 16;
         public static float heqw = 0;
-        public static float hea = 0;
+        float hea = 0;
+        int ssiaqw = 0;
+        public static int bind_aimbot = 0x02;
+        public static string bind_aimbot_name = "Mouse2";
+        uint st_flag,st_flag2;
         static Swed local = new Swed("RobloxPlayerBeta");
         public static Vector4 suport_cvet = new Vector4(1, 1, 0, 1);
         public static Vector4 suport_nik_cvet = new Vector4(0, 1, 0, 1);
@@ -145,12 +153,16 @@ namespace H163_ext_test
         public static Vector4 gui_lab_bbt = new Vector4(0.5f,0.5f,0,1);
         public static Vector4 gui_lab_txt = new Vector4(0.9f, 0.9f, 0, 1);
         public static Vector4 fov_color = new Vector4(0.5f, 0.5f, 0, 1);
+        public static Vector4 team_cl = new Vector4(0, 0, 1, 1);
+        public static Vector4 team_cl2 = new Vector4(1,0,0,1);
         public static uint cvet = ImGui.ColorConvertFloat4ToU32(suport_cvet);
         public static uint nik_cvet = ImGui.ColorConvertFloat4ToU32(suport_nik_cvet);
         public static uint fv_cla = ImGui.ColorConvertFloat4ToU32(fov_color);
         public static uint rd_1 = ImGui.ColorConvertFloat4ToU32(radar_me);
         public static uint rd_2 = ImGui.ColorConvertFloat4ToU32(radar_no_me);
         public static uint rd_map = ImGui.ColorConvertFloat4ToU32(map_color);
+        public static uint team_color = ImGui.ColorConvertFloat4ToU32(team_cl);
+        public static uint team_color2 = ImGui.ColorConvertFloat4ToU32(team_cl2);
         Vector2 fuck_yeeee = new Vector2(-1, -1);
         Vector2 sa3 = new Vector2(-1, -1);
         Vector2 part1 = new Vector2(-1, -1);
@@ -167,12 +179,12 @@ namespace H163_ext_test
             }
             if (de && !de_m)
             {  
-                local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x6848e04, 0);//PhysicsSenderMaxBandwidthBpsScaling
+                local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x6959de4, 0);//PhysicsSenderMaxBandwidthBpsScaling
                 de_m = true;
             }
             else if (!de)
             {
-                local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x6848e04, 5);//PhysicsSenderMaxBandwidthBpsScaling
+                local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x6959de4, 5);//PhysicsSenderMaxBandwidthBpsScaling
                 de_m = false;
             }
             if ((memory.GetAsyncKeyState(0x2D) & 0x8000) != 0)
@@ -322,7 +334,7 @@ namespace H163_ext_test
                         });
                         No_Cool_Down_Jump.Start();
                     }
-                    ImGui.Checkbox("Fly", ref fly);
+                    ImGui.Checkbox("Fly(method: Velocity)", ref fly);
                     ImGui.SliderFloat("fly speed",ref f_asp, 0, 300);
                     if (fly && !fly_m)
                     {
@@ -366,7 +378,14 @@ namespace H163_ext_test
                     }
                     ImGui.Checkbox("Desync", ref de);
                     ImGui.SameLine();
-                    ImGui.Text("-key enable (insert)");                    
+                    ImGui.Text("-key enable (insert)");
+                    if(ImGui.Checkbox("Freeze all", ref frez_all))
+                    {
+                        if(frez_all)
+                            local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x766F11C, 999999999); //DebugRateLimitRandom - on
+                        else
+                            local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x766F11C, 0); //DebugRateLimitRandom - off
+                    }
                     ImGui.Checkbox("Velocity Walk", ref V_walk);
                     ImGui.SliderFloat("Speed_W", ref kio, 1,200);
                     if (V_walk && !V_walk_mask)
@@ -430,15 +449,14 @@ namespace H163_ext_test
                         {
                             while (hit)
                             {
-                                var namme = Player_Modules.LocalPlayer();
-                                string me_name = namme.name();
+                                var namme = Player_Modules.LocalPlayer().address;
                                 foreach (var child in Player_Modules._players().getchildren())
                                 {
-                                    if (child.name() != me_name)
+                                    if (child.address != namme)
                                     {
                                         if(hit_tmch)
                                         {
-                                            var team = local.ReadPointer(namme.address + Offsets.Player.Team);
+                                            var team = local.ReadPointer(namme + Offsets.Player.Team);
                                             var team_pl = local.ReadPointer(child.address + Offsets.Player.Team);
                                             if (team == team_pl)
                                                 continue;
@@ -761,6 +779,24 @@ namespace H163_ext_test
                     ImGui.SetCursorPos(new Vector2(225, 30));
                     ImGui.Text("AimBot");
                     ImGui.Checkbox("Enable", ref aim);
+                    ImGui.SameLine();
+                    ImGui.Text("  -bind key:");
+                    ImGui.SameLine();
+                    if (ImGui.Button($"{bind_aimbot_name}"))
+                    {
+                        bind_aimbot_name = "...";
+                        Thread bind = new Thread(() => 
+                        {
+                            while (true)
+                            {
+                                bind_aimbot = bind_sys.Bind_keys();
+                                if (bind_aimbot == 0) continue;
+                                bind_aimbot_name = bind_sys.Key_name(bind_aimbot);
+                                break;
+                            }
+                        });
+                        bind.Start();
+                    }
                     ImGui.ListBox("Methods",ref metodg,metod,metod.Length);
                     ImGui.NewLine();
                     ImGui.ListBox("Part Target", ref tg_part, parts, parts.Length);
@@ -772,13 +808,12 @@ namespace H163_ext_test
                             var vis = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
                             while (aim)
                             {                                                                
-                                if ((memory.GetAsyncKeyState(0x02) & 0x8000) != 0)
+                                if ((memory.GetAsyncKeyState(bind_aimbot) & 0x8000) != 0)
                                     {
-                                    var asd = Player_Modules.LocalPlayer();
-                                    var name = asd.name();
+                                    var name = Player_Modules.LocalPlayer().address;
                                     nint team = 0;
                                     if(tm_ai)
-                                        team = local.ReadPointer(asd.address + Offsets.Player.Team);
+                                        team = local.ReadPointer(name + Offsets.Player.Team);
                                     var my = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
                                     if (my == 0) continue;
                                     Vector3 pss = local.ReadVec(my + offsets.Position);
@@ -791,7 +826,7 @@ namespace H163_ext_test
                                     var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                                     foreach (var child in Player_Modules._players().getchildren())
                                     {
-                                        if (child.name() != name)
+                                        if (child.address != name)
                                         {
                                             if (tm_ai)
                                             {
@@ -915,11 +950,10 @@ namespace H163_ext_test
                             var vis = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
                             while (tg)
                             {
-                                var asd = Player_Modules.LocalPlayer();
-                                var name = asd.name();
+                                var name = Player_Modules.LocalPlayer().address;
                                 nint team = 0;
                                 if (tm_tg)
-                                    team = local.ReadPointer(asd.address + Offsets.Player.Team);
+                                    team = local.ReadPointer(name + Offsets.Player.Team);
                                 var my = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
                                 if (my == 0) continue;
                                 Vector3 pss = local.ReadVec(my + offsets.Position);
@@ -932,7 +966,7 @@ namespace H163_ext_test
                                 var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                                 foreach (var child in Player_Modules._players().getchildren())
                                 {
-                                    if (child.name() != name)
+                                    if (child.address != name)
                                     {
                                         if (tm_tg)
                                         {
@@ -1044,10 +1078,12 @@ namespace H163_ext_test
                     ImGui.Checkbox("Down_Lines", ref lines2);
                     ImGui.Checkbox("Top_Lines", ref tp_linq);
                     ImGui.Checkbox("Square", ref sq);
+                    ImGui.SliderFloat("Square size", ref square_size,1,10);
                     ImGui.Checkbox("Circle", ref ecl);
                     ImGui.Checkbox("skeleton", ref sk);
                     ImGui.Checkbox("Team Check", ref esp_team_check);
                     ImGui.Checkbox("Distance", ref esp_distance);
+                    ImGui.Checkbox("Show team", ref show_team);
                     ImGui.Checkbox("skeleton_2(coming)", ref sk2);
                     ImGui.NewLine();
                     ImGui.Text("                         ESP(settings)");
@@ -1055,6 +1091,10 @@ namespace H163_ext_test
                         nik_cvet = ImGui.ColorConvertFloat4ToU32(suport_nik_cvet);
                     if (ImGui.ColorEdit4("Main color", ref suport_cvet))
                         cvet = ImGui.ColorConvertFloat4ToU32(suport_cvet);
+                    if(ImGui.ColorEdit4("Team color", ref team_cl))
+                        team_color = ImGui.ColorConvertFloat4ToU32(team_cl);
+                    if (ImGui.ColorEdit4("Team Nickname color", ref team_cl2))
+                        team_color2 = ImGui.ColorConvertFloat4ToU32(team_cl2);
                     ImGui.NewLine();
                     ImGui.Text("                             Radar");
                     if(ImGui.Checkbox("Radar", ref redare))
@@ -1094,6 +1134,23 @@ namespace H163_ext_test
                         else
                             the_host = 0;
                     }
+                    ImGui.NewLine();
+                    ImGui.Text("FFlags");
+                    if (ImGui.Checkbox("DebugDrawBroadPhaseAABBs", ref flag_1))
+                    {
+                        if (flag_1)
+                            local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x775B0F8, 999999999);//DebugDrawBroadPhaseAABBs - on
+                        else
+                            local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x775B0F8, 0);//DebugDrawBroadPhaseAABBs - off
+                    }
+                    if (ImGui.Checkbox("DebugDrawBvhNodes", ref flag_2))
+                    {
+                        if (flag_2)
+                            local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x775B038, 999999999);//DebugDrawBvhNodes - on
+                        else
+                            local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x775B038, 0);//DebugDrawBvhNodes - off
+                    }
+                    ImGui.NewLine();
                     ImGui.Text("                               Config");
                     if (ImGui.Button("  Save Config  "))
                     {
@@ -1138,10 +1195,10 @@ namespace H163_ext_test
                         memory.write<nint>(sub + offsets.CameraSubject, w);
                     }
                     int pl = 1;
-                    string me_name = Player_Modules.LocalPlayer().name();
+                    nint me_name = Player_Modules.LocalPlayer().address;
                     foreach (var child in Player_Modules._players().getchildren())
                     {
-                        if(child.name() != me_name)
+                        if(child.address != me_name)
                         {
                             ImGui.NewLine();
                             ImGui.Text($"{pl}. {child.name()}");
@@ -1194,7 +1251,7 @@ namespace H163_ext_test
                     var dim = memory.read<Vector2>(vis + offsets.Dimensions);
                     var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                     Vector3 aqsw = new Vector3(0,0,0);
-                    if(esp_distance || redare)
+                    if (esp_distance || redare)
                     {
                         var pr = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
                         aqsw = local.ReadVec(pr + offsets.Position);
@@ -1210,31 +1267,44 @@ namespace H163_ext_test
                             draw.AddRectFilled(new Vector2((radar_size.X + 10) / 2, (radar_size.Y + 10) / 2), new Vector2((radar_size.X + 10) / 2 + per_x, (radar_size.Y + 10) / 2 + per_x), rd_1, 10);
                         }
                     }
-                    var namme = Player_Modules.LocalPlayer();
-                    string name_me = namme.name();
+                    var name_me = Player_Modules.LocalPlayer().address;
                     foreach (var i in Player_Modules._players().getchildren())
-                    {
-                        string name_isq = i.name();
-                        if (name_isq != name_me)
+                    {                       
+                        if (i.address != name_me)
                         {
-                            if(esp_team_check)
+                            st_flag = cvet;
+                            st_flag2 = nik_cvet;
+                            if(esp_team_check || show_team)
                             {
-                                var team = local.ReadPointer(namme.address + Offsets.Player.Team);
+                                var team = local.ReadPointer(name_me + Offsets.Player.Team);
                                 var team_pl = local.ReadPointer(i.address + Offsets.Player.Team);
                                 if (team == team_pl)
-                                    continue;
+                                {
+                                    if (esp_team_check)
+                                        continue;
+                                    else if (show_team)
+                                    {
+                                        st_flag = team_color;
+                                        st_flag2 = team_color2;
+                                    }
+                                }                                    
                             }
                             var ch3 = local.ReadPointer(i.address + Offsets2.Player.Character);
                             if (ch3 == 0) continue;
                             var s3 = new instance(ch3);
                             byte bae = 7;
-                            if (sk)
-                                bae = 0;
+                            if (sk || sq)
+                            {
+                                if (!heal_flag)
+                                    bae = 1;
+                                else
+                                    bae = 0;
+                            }
                             else if (heal_flag)
                                 bae = 5;
                             else if (!nickname && !heal_flag && !lines && !lines2 && !sk && !ecl && !sq && !esp_distance && !redare && !tp_linq)
                                 continue;
-                            else if(redare || nickname || lines || lines2 || ecl || sq || esp_distance || tp_linq)
+                            else if (redare || nickname || lines || lines2 || ecl || esp_distance || tp_linq)
                                 bae = 6;
                             if (bae != 7)
                             {
@@ -1258,7 +1328,7 @@ namespace H163_ext_test
                                         bae++;
                                         hea = local.ReadFloat(child.address + offsets.Health);
                                     }
-                                    else if (sk)
+                                    else if (sk || sq)
                                     {
                                         if (name == "UpperTorso" || name == "Torso")
                                         {
@@ -1299,39 +1369,38 @@ namespace H163_ext_test
                                 {
                                     if (nickname)
                                     {
+                                        string name_isq = i.name();
                                         if (name_isq.Length > 1)
                                         {
                                             if (nickname && heal_flag && esp_distance)
-                                                draw.AddText(new Vector2(sa3.X - 80f, sa3.Y - 25f), nik_cvet, $"{name_isq} | HP:{hea} | {ssiaqw}m");
+                                                draw.AddText(new Vector2(sa3.X - 80f, sa3.Y - 25f), st_flag2, $"{name_isq} | HP:{hea} | {ssiaqw}m");
                                             else if (nickname && heal_flag)
-                                                draw.AddText(new Vector2(sa3.X - 50f, sa3.Y - 25f), nik_cvet, $"{name_isq} | HP:{hea}");
+                                                draw.AddText(new Vector2(sa3.X - 50f, sa3.Y - 25f), st_flag2, $"{name_isq} | HP:{hea}");
                                             else if (nickname && esp_distance)
-                                                draw.AddText(new Vector2(sa3.X - 50f, sa3.Y - 25f), nik_cvet, $"{name_isq} | {ssiaqw}m");
+                                                draw.AddText(new Vector2(sa3.X - 50f, sa3.Y - 25f), st_flag2, $"{name_isq} | {ssiaqw}m");
                                             else
-                                                draw.AddText(new Vector2(sa3.X - 20f, sa3.Y - 25f), nik_cvet, name_isq);
+                                                draw.AddText(new Vector2(sa3.X - 20f, sa3.Y - 25f), st_flag2, name_isq);
                                         }
                                     }
                                     else if (heal_flag)
                                     {
                                         if(esp_distance)
-                                            draw.AddText(new Vector2(sa3.X - 50f, sa3.Y - 25f), nik_cvet, $"HP:{hea} | {ssiaqw}m");
+                                            draw.AddText(new Vector2(sa3.X - 50f, sa3.Y - 25f), st_flag2, $"HP:{hea} | {ssiaqw}m");
                                         else
-                                            draw.AddText(new Vector2(sa3.X - 20f, sa3.Y - 25f), nik_cvet, $"HP:{hea}");
+                                            draw.AddText(new Vector2(sa3.X - 20f, sa3.Y - 25f), st_flag2, $"HP:{hea}");
                                     }
                                     else if(esp_distance)
-                                        draw.AddText(new Vector2(sa3.X - 20f, sa3.Y - 25f), nik_cvet, $"{ssiaqw}m");
+                                        draw.AddText(new Vector2(sa3.X - 20f, sa3.Y - 25f), st_flag2, $"{ssiaqw}m");
                                     if (lines)
-                                        draw.AddLine(new Vector2(960, 540), sa3, cvet);
+                                        draw.AddLine(new Vector2(960, 540), sa3, st_flag);
                                     if (lines2)
-                                        draw.AddLine(new Vector2(960, 1080), sa3, cvet);
-                                    if(tp_linq)
-                                        draw.AddLine(new Vector2(960, 0), sa3, cvet);
-                                    if (sq)
-                                        draw.AddRect(new Vector2(sa3.X - 20, sa3.Y + 40), new Vector2(sa3.X + 20, sa3.Y - 10), cvet);
+                                        draw.AddLine(new Vector2(960, 1080), sa3, st_flag);
+                                    if (tp_linq)
+                                        draw.AddLine(new Vector2(960, 0), sa3, st_flag);                                   
                                     if (ecl)
-                                        draw.AddCircle(sa3, 30, cvet);
+                                        draw.AddCircle(sa3, 30, st_flag);
                                     if (sk)
-                                        draw.AddLine(fuck_yeeee, sa3, cvet);                                                                        
+                                        draw.AddLine(fuck_yeeee, sa3, st_flag);                                                                        
                                 }
                                 if (redare)
                                 {                                   
@@ -1341,14 +1410,27 @@ namespace H163_ext_test
                                     if(x <= radar_size.X && z <= radar_size.Y && x >= 10 && z >= 10)
                                         draw.AddRectFilled(new Vector2(x, z), new Vector2(x + per_x, z + per_x), rd_2, 10);
                                 }
-                                if (sk && esp_flagsex)
+                                if ((sk || sq) && esp_flagsex)
+                                {
                                     if (fuck_yeeee.X >= 0 && fuck_yeeee.X <= 1920 && fuck_yeeee.Y >= 0 && fuck_yeeee.Y <= 1080)
                                     {
-                                        draw.AddLine(fuck_yeeee, part1, cvet);
-                                        draw.AddLine(fuck_yeeee, part2, cvet);
-                                        draw.AddLine(fuck_yeeee, part3, cvet);
-                                        draw.AddLine(fuck_yeeee, part4, cvet);
+                                        if (sk)
+                                        {
+                                            float pos1 = (sa3.Y - fuck_yeeee.Y) / 2;
+                                            draw.AddLine(fuck_yeeee, part1, st_flag);
+                                            draw.AddLine(fuck_yeeee, part2, st_flag);
+                                            draw.AddLine(new Vector2(fuck_yeeee.X, fuck_yeeee.Y + pos1), new Vector2(part3.X, part3.Y + pos1), st_flag);
+                                            draw.AddLine(new Vector2(part3.X, part3.Y + pos1), part3, st_flag);
+                                            draw.AddLine(new Vector2(fuck_yeeee.X, fuck_yeeee.Y + pos1), new Vector2(part4.X, part4.Y + pos1), st_flag);
+                                            draw.AddLine(new Vector2(part4.X, part4.Y + pos1), part4, st_flag);
+                                        }
+                                        if(sq)
+                                        {
+                                            draw.AddRect(new Vector2(part2.X + (part4.X - part2.X),part2.Y), new Vector2(part3.X, part3.Y + (sa3.Y - part3.Y)), st_flag,0,ImDrawFlags.None, square_size);
+                                        }
                                     }
+                                }
+                                
                             }
                         }
                     }
@@ -1359,6 +1441,8 @@ namespace H163_ext_test
         }
     }
 }
+
+
 
 
 
