@@ -7,6 +7,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using ClickableTransparentOverlay;
@@ -19,7 +20,7 @@ using Shoto_tyt_esti;
 using Swed64;
 using Vortice.Mathematics;
 using static Offsets;
-using System.Text;
+using static Offsets2;
 using static Shoto_tyt_esti.CFrame_a;
 using Humanoid = Shoto_tyt_esti.Humanoid;
 namespace H163_ext_test
@@ -91,7 +92,7 @@ namespace H163_ext_test
         public static bool flag_1 = false;
         public static bool flag_2 = false;
         bool frez_all = false;
-        bool show_team = false;
+        public static bool show_team = false;
         public static float distance_work = 75;
         public static float size_hit = 1;
         public static float gra = 0;
@@ -141,6 +142,7 @@ namespace H163_ext_test
         public static float heqw = 0;
         float hea = 0;
         int ssiaqw = 0;
+        public static bool heal_check = false;
         public static int bind_aimbot = 0x02;
         public static string bind_aimbot_name = "Mouse2";
         uint st_flag,st_flag2;
@@ -163,15 +165,22 @@ namespace H163_ext_test
         public static uint rd_map = ImGui.ColorConvertFloat4ToU32(map_color);
         public static uint team_color = ImGui.ColorConvertFloat4ToU32(team_cl);
         public static uint team_color2 = ImGui.ColorConvertFloat4ToU32(team_cl2);
-        Vector2 fuck_yeeee = new Vector2(-1, -1);
-        Vector2 sa3 = new Vector2(-1, -1);
-        Vector2 part1 = new Vector2(-1, -1);
-        Vector2 part2 = new Vector2(-1, -1);
-        Vector2 part3 = new Vector2(-1, -1);
-        Vector2 part4 = new Vector2(-1, -1);
+        bool placeid_flag = false;
+        Thread placeid_checker = new Thread(() =>
+        {
+            while(true)
+            {
+                Player_Modules.placeid = local.ReadInt(base_s.GT().address + Offsets.DataModel.GameId);
+                Thread.Sleep(5000);
+            }
+        });
         protected override void Render()
         {
-            
+            if (!placeid_flag)
+            {
+                placeid_checker.Start();
+                placeid_flag = true;
+            }
             if (memory.GetAsyncKeyState(0x76) < 0) //https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
             {
                 hide_gui = !hide_gui;              
@@ -182,7 +191,7 @@ namespace H163_ext_test
                 local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x6959de4, 0);//PhysicsSenderMaxBandwidthBpsScaling
                 de_m = true;
             }
-            else if (!de)
+            else if (!de && de_m)
             {
                 local.WriteInt(local.GetModuleBase("RobloxPlayerBeta.exe") + 0x6959de4, 5);//PhysicsSenderMaxBandwidthBpsScaling
                 de_m = false;
@@ -218,6 +227,7 @@ namespace H163_ext_test
                     else
                         Console.WriteLine("ti eblan");
                 }
+                
                 ImGui.SetCursorPos(new Vector2(20, 40));
                 if (ImGui.Button("Player"))
                 {
@@ -534,16 +544,21 @@ namespace H163_ext_test
                     {
                         foreach (var child in Player_Modules.Character_LocalPLayer().getchildren())
                         {
-                            var p = local.ReadPointer(child.address + offsets.Primitive);
-                            if (local.ReadVec(p + offsets.PartSize) == new Vector3(2, 2, 1) && child.name() != "Torso")
+                            string asxz = child.name();
+                            if (asxz != "Torso" && asxz.Length <= 6 && asxz != "Head")
                             {
-                                CFrame m = memory.read<CFrame>(p + offsets.CFrame);
-                                CFrame tp = new CFrame(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1), m.position);
-                                for (int i = 0; i < 1000; i++)
+                                var p = local.ReadPointer(child.address + offsets.Primitive);
+                                Vector3 qq = local.ReadVec(p + offsets.PartSize);
+                                if (qq.X >= 2 && qq.Y >= 2)
                                 {
-                                    memory.write<CFrame>(p + offsets.CFrame, tp);
+                                    CFrame m = memory.read<CFrame>(p + offsets.CFrame);
+                                    CFrame tp = new CFrame(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1), m.position);
+                                    for (int i = 0; i < 1000; i++)
+                                    {
+                                        memory.write<CFrame>(p + offsets.CFrame, tp);
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
                         Humanoid.PlatformStand(true);
@@ -565,16 +580,21 @@ namespace H163_ext_test
                         {
                             foreach (var child in Player_Modules.Character_LocalPLayer().getchildren())
                             {
-                                var p = local.ReadPointer(child.address + offsets.Primitive);
-                                if (local.ReadVec(p + offsets.PartSize) == new Vector3(2, 2, 1) && child.name() != "Torso")
+                                string asxz = child.name();
+                                if (asxz != "Torso" && asxz.Length <= 6 && asxz != "Head")
                                 {
-                                    CFrame m = memory.read<CFrame>(p + offsets.CFrame);
-                                    CFrame tp = new CFrame(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1), m.position);
-                                    for (int i = 0; i < 1000; i++)
+                                    var p = local.ReadPointer(child.address + offsets.Primitive);
+                                    Vector3 qq = local.ReadVec(p + offsets.PartSize);
+                                    if (qq.X >= 2 && qq.Y >= 2)
                                     {
-                                        memory.write<CFrame>(p + offsets.CFrame, tp);
+                                        CFrame m = memory.read<CFrame>(p + offsets.CFrame);
+                                        CFrame tp = new CFrame(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1), m.position);
+                                        for (int i = 0; i < 1000; i++)
+                                        {
+                                            memory.write<CFrame>(p + offsets.CFrame, tp);
+                                        }
+                                        break;
                                     }
-                                    break;
                                 }
                             }
                             Humanoid.PlatformStand(true);
@@ -810,10 +830,27 @@ namespace H163_ext_test
                             {                                                                
                                 if ((memory.GetAsyncKeyState(bind_aimbot) & 0x8000) != 0)
                                     {
-                                    var name = Player_Modules.LocalPlayer().address;
-                                    nint team = 0;
-                                    if(tm_ai)
-                                        team = local.ReadPointer(name + Offsets.Player.Team);
+                                    var name = Player_Modules.LocalPlayer();
+                                    nint team = 0,cheker = 0;
+                                    if (tm_ai)
+                                    {
+                                        cheker = Player_Modules.placeid;
+                                        if (cheker != 1740904786 && cheker != -1517259690)
+                                            team = local.ReadPointer(name.address + Offsets.Player.Team);
+                                        else if (cheker == 1740904786)
+                                            team = name.GetAttriduteValue("TeamID");
+                                        else
+                                        {
+                                            foreach (var sisi in name.getchildren())
+                                            {
+                                                if (sisi.classname().Contains("Folder"))
+                                                    foreach (var t in sisi.getchildren())
+                                                        if (t.name() == "Team")
+                                                            team = local.ReadInt(t.address + Offsets2.Value.Value1);
+                                            }
+                                        }
+                                            
+                                    }
                                     var my = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
                                     if (my == 0) continue;
                                     Vector3 pss = local.ReadVec(my + offsets.Position);
@@ -826,23 +863,38 @@ namespace H163_ext_test
                                     var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                                     foreach (var child in Player_Modules._players().getchildren())
                                     {
-                                        if (child.address != name)
+                                        if (child.address != name.address)
                                         {
                                             if (tm_ai)
                                             {
-                                                team_pl = local.ReadPointer(child.address + Offsets.Player.Team);
-                                                if (team_pl == team)          
+                                                if (cheker != 1740904786 && cheker != -1517259690)
+                                                    team_pl = local.ReadPointer(child.address + Offsets.Player.Team);
+                                                else if(cheker == 1740904786)
+                                                    team_pl = child.GetAttriduteValue("TeamID");
+                                                else
+                                                {
+                                                    foreach (var sisi in child.getchildren())
+                                                    {
+                                                        if (sisi.classname().Contains("Folder"))
+                                                            foreach (var t in sisi.getchildren())
+                                                                if (t.name() == "Team")
+                                                                    team_pl = local.ReadInt(t.address + Offsets2.Value.Value1);
+                                                    }
+                                                }
+                                                if (team_pl == team)
                                                     continue;
                                             }
                                             ca = local.ReadPointer(child.address + Offsets2.Player.Character);
                                             if (ca == 0) continue;                                         
                                             instance a2 = new instance(ca);
                                             byte qw = 0;
+                                            if (!heal_check)
+                                                qw = 1;
                                             foreach(var irhf in a2.getchildren())
                                             {
                                                 if (qw == 2) break;
                                                 string ze_name = irhf.name();
-                                                if (ze_name == "Humanoid")
+                                                if (ze_name == "Humanoid" && heal_check)
                                                 {
                                                     hud = irhf.address;
                                                     qw++;
@@ -859,33 +911,28 @@ namespace H163_ext_test
                                                 }
 
                                             }
-                                            
-                                            if(hud == 0 || head == 0) continue;
-                                            if (local.ReadFloat(hud + offsets.Health) > 0)
-                                            {                                                
-                                                var head_prim = local.ReadPointer(head + offsets.Primitive);
-                                                Vector3 pos2 = local.ReadVec(head_prim + offsets.Position);                                               
-                                                if (Math.Abs(pss.X - pos2.X) < distance_work && Math.Abs(pss.Y - pos2.Y) < distance_work && Math.Abs(pss.Z - pos2.Z) < distance_work)
-                                                {                                                    
-                                                    Vector2 q = Scr_Mos.world_to_screen(pos2, dim, dim1);
-                                                    if (q.X >= 0 && q.Y >= 0 && q.X <= 1920 && q.Y <= 1080)
+                                            if (head == 0) continue;
+                                            if (heal_check)
+                                            {
+                                                if (hud == 0) continue;
+                                                if (local.ReadFloat(hud + offsets.Health) <= 0)
+                                                    continue;
+                                            }
+                                            var head_prim = local.ReadPointer(head + offsets.Primitive);
+                                            Vector3 pos2 = local.ReadVec(head_prim + offsets.Position);                                               
+                                            if (Math.Abs(pss.X - pos2.X) < distance_work && Math.Abs(pss.Y - pos2.Y) < distance_work && Math.Abs(pss.Z - pos2.Z) < distance_work)
+                                            {                                                    
+                                                Vector2 q = Scr_Mos.world_to_screen(pos2, dim, dim1);
+                                                if (q.X >= 0 && q.Y >= 0 && q.X <= 1920 && q.Y <= 1080)
+                                                {
+                                                    int x = aqw.X - (int)q.X;
+                                                    int y = aqw.Y - (int)q.Y;
+                                                    float dist = x * x + y * y;
+                                                    if (dist < closestDistance)
                                                     {
-                                                        int x = aqw.X - (int)q.X;
-                                                        int y = aqw.Y - (int)q.Y;
-                                                        float dist = x * x + y * y;
-                                                        if (dist < closestDistance)
+                                                        if (FOV_flagsex)
                                                         {
-                                                            if (FOV_flagsex)
-                                                            {
-                                                                if (Math.Abs(x) <= FVW && Math.Abs(y) <= FVW)
-                                                                {
-                                                                    closestDistance = dist;
-                                                                    a = q;
-                                                                    if (metodg == 1)
-                                                                        the_thebest = pos2;
-                                                                }
-                                                            }
-                                                            else
+                                                            if (Math.Abs(x) <= FVW && Math.Abs(y) <= FVW)
                                                             {
                                                                 closestDistance = dist;
                                                                 a = q;
@@ -893,9 +940,17 @@ namespace H163_ext_test
                                                                     the_thebest = pos2;
                                                             }
                                                         }
+                                                        else
+                                                        {
+                                                            closestDistance = dist;
+                                                            a = q;
+                                                            if (metodg == 1)
+                                                                the_thebest = pos2;
+                                                        }
                                                     }
                                                 }
                                             }
+                                            
                                         }
                                     }
                                     if (a.X >= 0 && a.Y >= 0 && a.X <= 1920 && a.Y <= 1080)
@@ -903,21 +958,17 @@ namespace H163_ext_test
                                         int w = aqw.X - (int)a.X;
                                         int w2 = aqw.Y - (int)a.Y;
                                         if (metodg == 0)
-                                            Scr_Mos.MoveMouse(-w / 2, -w2 / 2);
+                                            Scr_Mos.MoveMouse(-w / 4, -w2 / 4);
                                         else
                                         {
                                             var cam = base_s.Camera();
                                             Vector3 CamPos = local.ReadVec(cam + offsets.CameraPos);
                                             Vector3 LokDir = Vector3.Normalize(the_thebest - CamPos);
                                             Rotation a123 = memory.read<Rotation>(cam + Offsets.Camera.Rotation);
-                                            Vector3 u = a123.UpVector;
-                                            Vector3 u2 = a123.RightVector;
-                                            Vector3 u3 = a123.LookVector;
-                                            memory.write<Rotation>(base_s.Camera() + Offsets.Camera.Rotation, new Rotation(new Vector3(u2.X, u2.Y, -LokDir.X), new Vector3(u.Z, u.Y, -LokDir.Y), new Vector3(u3.X, u3.Y, -LokDir.Z)));
+                                            memory.write<Rotation>(cam + Offsets.Camera.Rotation, new Rotation(new Vector3(a123.RightVector.X, a123.RightVector.Y, -LokDir.X), new Vector3(a123.UpVector.Z, a123.UpVector.Y, -LokDir.Y), new Vector3(a123.LookVector.X, a123.LookVector.Y, -LokDir.Z)));
                                         }
                                     }
                                 }
-                                Thread.Sleep(1);
                             }                            
                             aim_m = false;
                         });
@@ -926,6 +977,7 @@ namespace H163_ext_test
                     ImGui.NewLine();
                     ImGui.SliderFloat("Distance", ref distance_work, 0, 1000);
                     ImGui.Checkbox("Team Check", ref tm_ai);
+                    ImGui.Checkbox("Health check", ref heal_check);
                     if (ImGui.Checkbox("FOV", ref FOV_flagsex))
                     {
                         if (FOV_flagsex)
@@ -950,10 +1002,26 @@ namespace H163_ext_test
                             var vis = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
                             while (tg)
                             {
-                                var name = Player_Modules.LocalPlayer().address;
-                                nint team = 0;
-                                if (tm_tg)
-                                    team = local.ReadPointer(name + Offsets.Player.Team);
+                                var name = Player_Modules.LocalPlayer();
+                                nint team = 0, cheker = 0;
+                                if (tm_ai)
+                                {
+                                    cheker = Player_Modules.placeid;
+                                    if (cheker != 1740904786 && cheker != -1517259690)
+                                        team = local.ReadPointer(name.address + Offsets.Player.Team);
+                                    else if (cheker == 1740904786)
+                                        team = name.GetAttriduteValue("TeamID");
+                                    else
+                                    {
+                                        foreach (var sisi in name.getchildren())
+                                        {
+                                            if (sisi.classname().Contains("Folder"))
+                                                foreach (var t in sisi.getchildren())
+                                                    if (t.name() == "Team")
+                                                        team = local.ReadInt(t.address + Offsets2.Value.Value1);
+                                        }
+                                    }
+                                }
                                 var my = local.ReadPointer(Player_Modules.Character_LocalPLayer().findfirstchild("Head").address + offsets.Primitive);
                                 if (my == 0) continue;
                                 Vector3 pss = local.ReadVec(my + offsets.Position);
@@ -966,11 +1034,24 @@ namespace H163_ext_test
                                 var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
                                 foreach (var child in Player_Modules._players().getchildren())
                                 {
-                                    if (child.address != name)
+                                    if (child.address != name.address)
                                     {
-                                        if (tm_tg)
+                                        if (tm_ai)
                                         {
-                                            team_pl = local.ReadPointer(child.address + Offsets.Player.Team);
+                                            if (cheker != 1740904786 && cheker != -1517259690)
+                                                team_pl = local.ReadPointer(child.address + Offsets.Player.Team);
+                                            else if (cheker == 1740904786)
+                                                team_pl = child.GetAttriduteValue("TeamID");
+                                            else
+                                            {
+                                                foreach (var sisi in child.getchildren())
+                                                {
+                                                    if (sisi.classname().Contains("Folder"))
+                                                        foreach (var t in sisi.getchildren())
+                                                            if (t.name() == "Team")
+                                                                team_pl = local.ReadInt(t.address + Offsets2.Value.Value1);
+                                                }
+                                            }
                                             if (team_pl == team)
                                                 continue;
                                         }
@@ -1250,6 +1331,26 @@ namespace H163_ext_test
                     var vis = local.ReadPointer(local.GetModuleBase("RobloxPlayerBeta.exe") + offsets.VisualEnginePointer);
                     var dim = memory.read<Vector2>(vis + offsets.Dimensions);
                     var dim1 = memory.read<Matrix4x4>(vis + offsets.viewmatrix);
+                    nint cheker = 0,team = 0;
+                    var name_me = Player_Modules.LocalPlayer();
+                    if (esp_team_check || show_team)
+                    {
+                        cheker = Player_Modules.placeid;
+                        if (cheker != 1740904786 && cheker != -1517259690)
+                            team = local.ReadPointer(name_me.address + Offsets.Player.Team);
+                        else if(cheker == 1740904786)
+                            team = name_me.GetAttriduteValue("TeamID");
+                        else
+                        {
+                            foreach (var sisi in name_me.getchildren())
+                            {
+                                if (sisi.classname().Contains("Folder"))
+                                    foreach (var t in sisi.getchildren())
+                                        if (t.name() == "Team")
+                                            team = local.ReadInt(t.address + Offsets2.Value.Value1);
+                            }
+                        }
+                    }
                     Vector3 aqsw = new Vector3(0,0,0);
                     if (esp_distance || redare)
                     {
@@ -1266,18 +1367,28 @@ namespace H163_ext_test
                             }
                             draw.AddRectFilled(new Vector2((radar_size.X + 10) / 2, (radar_size.Y + 10) / 2), new Vector2((radar_size.X + 10) / 2 + per_x, (radar_size.Y + 10) / 2 + per_x), rd_1, 10);
                         }
-                    }
-                    var name_me = Player_Modules.LocalPlayer().address;
+                    }                   
                     foreach (var i in Player_Modules._players().getchildren())
                     {                       
-                        if (i.address != name_me)
+                        if (i.address != name_me.address)
                         {
-                            st_flag = cvet;
-                            st_flag2 = nik_cvet;
-                            if(esp_team_check || show_team)
+                            if (esp_team_check || show_team)
                             {
-                                var team = local.ReadPointer(name_me + Offsets.Player.Team);
-                                var team_pl = local.ReadPointer(i.address + Offsets.Player.Team);
+                                nint team_pl = -163;
+                                if (cheker != 1740904786 && cheker != -1517259690)
+                                    team_pl = local.ReadPointer(i.address + Offsets.Player.Team);
+                                else if (cheker == 1740904786)
+                                    team_pl = i.GetAttriduteValue("TeamID");
+                                else
+                                {
+                                    foreach (var sisi in i.getchildren())
+                                    {
+                                        if (sisi.classname().Contains("Folder"))
+                                            foreach (var t in sisi.getchildren())
+                                                if (t.name() == "Team")
+                                                    team_pl = local.ReadInt(t.address + Offsets2.Value.Value1);
+                                    }
+                                }
                                 if (team == team_pl)
                                 {
                                     if (esp_team_check)
@@ -1287,8 +1398,16 @@ namespace H163_ext_test
                                         st_flag = team_color;
                                         st_flag2 = team_color2;
                                     }
-                                }                                    
+                                }
                             }
+                            st_flag = cvet;
+                            st_flag2 = nik_cvet;
+                            Vector2 fuck_yeeee = new Vector2(-1, -1);
+                            Vector2 sa3 = new Vector2(-1, -1);
+                            Vector2 part1 = new Vector2(-1, -1);
+                            Vector2 part2 = new Vector2(-1, -1);
+                            Vector2 part3 = new Vector2(-1, -1);
+                            Vector2 part4 = new Vector2(-1, -1);
                             var ch3 = local.ReadPointer(i.address + Offsets2.Player.Character);
                             if (ch3 == 0) continue;
                             var s3 = new instance(ch3);
@@ -1426,7 +1545,7 @@ namespace H163_ext_test
                                         }
                                         if(sq)
                                         {
-                                            draw.AddRect(new Vector2(part2.X + (part4.X - part2.X),part2.Y), new Vector2(part3.X, part3.Y + (sa3.Y - part3.Y)), st_flag,0,ImDrawFlags.None, square_size);
+                                            draw.AddRect(new Vector2(part2.X + (part4.X - part2.X) * 1.5f,part2.Y - (part4.Y - part2.Y)/3), new Vector2(part3.X + (part3.X - sa3.X)/4, part3.Y + (sa3.Y - part3.Y) * 1.35f), st_flag,0,ImDrawFlags.None, square_size);
                                         }
                                     }
                                 }
@@ -1441,6 +1560,8 @@ namespace H163_ext_test
         }
     }
 }
+
+
 
 
 
