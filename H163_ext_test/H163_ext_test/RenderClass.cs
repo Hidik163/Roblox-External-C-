@@ -204,12 +204,12 @@ namespace H163_ext_test
             }
             if (de && !de_m)
             {
-                local.WriteInt(base_s.Module_base + 0x6959de4, 0);//PhysicsSenderMaxBandwidthBpsScaling
+                local.WriteInt(base_s.Module_base + 0x6959de4, 0);
                 de_m = true;
             }
             else if (!de && de_m)
             {
-                local.WriteInt(base_s.Module_base + 0x6959de4, 5);//PhysicsSenderMaxBandwidthBpsScaling
+                local.WriteInt(base_s.Module_base + 0x6959de4, 5);
                 de_m = false;
             }
             if ((memory.GetAsyncKeyState(0x2D) & 0x8000) != 0)
@@ -1556,6 +1556,7 @@ namespace H163_ext_test
         }
     }
 }
+
 
 
 
